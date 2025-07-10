@@ -27,10 +27,10 @@ TABLE_STYLE = TableStyle([
     ("GRID", (0, 0), (-1, -1), 1, colors.black),  # خطوط جدول
 ])
 
-FONT_PATH = os.path.join(settings.BASE_DIR, "static/fonts/Vazirmatn-Regular.ttf")
+FONT_PATH = os.path.join(settings.BASE_DIR, "staticfiles/fonts/Vazirmatn-Regular.ttf")
 pdfmetrics.registerFont(TTFont("Vazirmatn", FONT_PATH))
 
-BOLD_FONT_PATH = os.path.join(settings.BASE_DIR, "static/fonts/Vazirmatn-Bold.ttf")
+BOLD_FONT_PATH = os.path.join(settings.BASE_DIR, "staticfiles/fonts/Vazirmatn-Bold.ttf")
 pdfmetrics.registerFont(TTFont("VazirmatnBold", BOLD_FONT_PATH))
 
 P_STYLE = ParagraphStyle(name='Right',
