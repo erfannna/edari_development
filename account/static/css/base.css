@@ -1,0 +1,1669 @@
+@font-face {
+    font-family: 'IRANSansX';
+    src: url('/static/fonts/IRANSansX-Regular.woff2') format('woff2'),
+         url('/static/fonts/IRANSansX-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'IRANSansX';
+    src: url('/static/fonts/IRANSansX-Bold.woff2') format('woff2'),
+         url('/static/fonts/IRANSansX-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* تعریف فونت‌های Font Awesome */
+@font-face {
+  font-family: 'Font Awesome 6 Free';
+  font-style: normal;
+  font-weight: 900;
+  font-display: block;
+  src: url("../vendor/fontawesome/fontawesome-free-6.5.1-web/webfonts/fa-solid-900.woff2") format("woff2"),
+       url("../vendor/fontawesome/fontawesome-free-6.5.1-web/webfonts/fa-solid-900.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: 'Font Awesome 6 Free';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../vendor/fontawesome/fontawesome-free-6.5.1-web/webfonts/fa-regular-400.woff2") format("woff2"),
+       url("../vendor/fontawesome/fontawesome-free-6.5.1-web/webfonts/fa-regular-400.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: 'Font Awesome 6 Brands';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../vendor/fontawesome/fontawesome-free-6.5.1-web/webfonts/fa-brands-400.woff2") format("woff2"),
+       url("../vendor/fontawesome/fontawesome-free-6.5.1-web/webfonts/fa-brands-400.ttf") format("truetype");
+}
+
+/* تنظیمات پایه و متغیرهای تم */
+:root {
+    --primary-color: #007E46; /* رنگ اصلی - سبز */
+    --primary-light: #00a35c; /* نسخه روشن‌تر */
+    --primary-dark: #006638; /* نسخه تیره‌تر */
+    --secondary-color: #FF6B6B;
+    --accent-color: #59D8D8;
+    --success-color: #36B37E;
+    --warning-color: #FFAB00;
+    --error-color: #FF5630;
+    --text-color: #242a36; /* رنگ متن اصلی */
+    --text-light: #6B778C;
+    --text-muted: #97A0AF;
+    --text-disabled: #A5ADBA;
+    --bg-color: #f5f6fa; /* رنگ پس‌زمینه */
+    --bg-light: #FFFFFF;
+    --bg-card: #FFFFFF;
+    
+    --sidebar-width: 250px;
+    --topbar-height: 70px;
+    
+    --border-radius-xs: 4px;
+    --border-radius-sm: 8px;
+    --border-radius: 12px;
+    --border-radius-lg: 16px;
+    
+    --box-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    --box-shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.12);
+    --box-shadow-hover: 0 8px 12px rgba(0, 126, 70, 0.15);
+    
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-2xl: 48px;
+    
+    --font-xs: 12px;
+    --font-header:13px;
+    --font-sm: 14px;
+
+    --font-md: 16px;
+    --font-lg: 18px;
+    --font-xl: 20px;
+    --font-2xl: 24px;
+    --font-3xl: 32px;
+    
+    --transition: all 0.3s ease;
+    
+    --main-font: 'IRANSansX', 'iran-sans', 'IRANSans', 'Iranian-Sans', Tahoma, Arial, sans-serif;
+    --icon-font: 'Font Awesome 6 Free', 'FontAwesome', sans-serif;
+}
+
+/* ریست کلی */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    border: none;
+    font-family: var(--main-font);
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    font-family: var(--main-font);
+    font-size: var(--font-md);
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    direction: rtl;
+    overflow-x: hidden;
+}
+
+/* اطمینان از استفاده از فونت آیکون برای المان‌های مربوطه */
+.fa,
+.fa-solid,
+.fa-regular,
+.fa-brands,
+.fa-light,
+.fa-thin,
+i[class^="fa-"] {
+    font-family: var(--icon-font) !important;
+    font-style: normal; 
+}
+
+/* اطمینان از استفاده از فونت اصلی برای تمامی متن‌ها */
+p, h1, h2, h3, h4, h5, h6,
+span, div, button, input, 
+textarea, select, option,
+label, a, li, td, th {
+    font-family: var(--main-font) !important;
+}
+
+/* اسکرول‌بار */
+html {
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-light) rgba(0, 0, 0, 0.03);
+    direction: rtl;
+}
+
+/* تنظیم اسکرول‌بار در سمت چپ */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    direction: ltr;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-light);
+    border-radius: 10px;
+    opacity: 0.7;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+}
+
+/* سایدبار - طراحی مینیمال و مدرن */
+#sideBar {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    width: var(--sidebar-width);
+    height: 100vh;
+    top: 0;
+    right: 0;
+    background-color: var(--bg-light);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.06);
+    padding: 0;
+    z-index: 100;
+    overflow-y: auto;
+    overflow-x: hidden;
+    transition: all 0.3s ease;
+    border-left: 1px solid rgba(0, 0, 0, 0.05);
+    direction: rtl;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-light) rgba(0, 0, 0, 0.03);
+}
+
+#sideBar.collapsed {
+    right: calc(-1 * var(--sidebar-width) + 0px);
+}
+
+/* پروفایل کاربر - مینیمال و مدرن */
+.profile-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--spacing-md) var(--spacing-md);
+    margin-bottom: 0;
+    position: relative;
+    background-color: transparent;
+    box-shadow: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    border-right: none;
+    border-radius: 0;
+}
+
+.profile-section::before,
+.profile-section::after {
+    display: none;
+}
+
+.pName {
+    font-size: var(--font-lg);
+    font-weight: 500;
+    color: var(--text-color);
+    margin-bottom: 8px;
+    text-align: right;
+    text-shadow: none;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-role {
+    margin-top: 0;
+    width: 100%;
+}
+
+.role-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    background-color: rgba(0, 126, 70, 0.1);
+    color: var(--primary-color);
+    border-radius: 4px;
+    font-size: var(--font-sm);
+    font-weight: 500;
+    backdrop-filter: none;
+    box-shadow: none;
+    border: 1px solid rgba(0, 126, 70, 0.15);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+@media (max-width: 768px) {
+    .profile-section {
+        flex-direction: row;
+        align-items: center;
+        gap: var(--spacing-md);
+        justify-content: space-between;
+    }
+    
+    .pName {
+        margin-bottom: 2px;
+        width: auto;
+    }
+    
+    .user-role {
+        width: auto;
+        margin-right: auto;
+    }
+    
+    .role-badge {
+        max-width: none;
+        font-size: clamp(5px, 0.7rem, var(--font-sm));
+        white-space: nowrap;
+        overflow: visible;
+        text-overflow: initial;
+    }
+}
+
+/* منوی جانبی - مینیمال و مدرن */
+.menu-section {
+    flex: 1;
+    margin-top: 0;
+    padding: 0 0 var(--spacing-md) 0;
+}
+
+.menuCat {
+    font-size: var(--font-sm);
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 0;
+    padding: var(--spacing-sm) var(--spacing-md);
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    border-radius: 0;
+}
+
+.accordion-header .menuCat {
+    margin-bottom: 0;
+    border-radius: 0;
+    padding: 14px var(--spacing-md);
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.accordion-header .menuCat::before {
+    display: none;
+}
+
+.accordion-header:hover .menuCat {
+    background-color: rgba(0, 0, 0, 0.02);
+    color: var(--primary-color);
+}
+
+.accordion-header.active .menuCat {
+    color: var(--primary-color);
+    background-color: transparent;
+    font-weight: 500;
+}
+
+.accordion-icon {
+    margin-left: var(--spacing-sm);
+    font-size: var(--font-md);
+    width: 24px;
+    text-align: center;
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+.accordion-header:hover .accordion-icon,
+.accordion-header.active .accordion-icon {
+    color: var(--primary-color);
+    opacity: 1;
+}
+
+.accordion-arrow {
+    margin-right: auto;
+    transition: transform 0.2s ease;
+    font-size: 10px;
+    opacity: 0.5;
+    color: var(--text-muted);
+}
+
+.accordion-arrow.open {
+    transform: rotate(180deg);
+    opacity: 0.8;
+    color: var(--primary-color);
+}
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    opacity: 0;
+    background-color: var(--bg-color);
+}
+
+.accordion-content.open {
+    opacity: 1;
+}
+
+.accordion-content .menu-items {
+    margin: 0;
+    border-right: none;
+    padding-right: 0;
+    padding: var(--spacing-xs) 0;
+}
+
+.menu-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 0;
+}
+
+.menuItem {
+    display: flex;
+    align-items: center;
+    padding: 10px var(--spacing-lg);
+    color: var(--text-light);
+    text-decoration: none;
+    border-radius: 0;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    font-size: var(--font-sm);
+    position: relative;
+    overflow: hidden;
+}
+
+.menuItem::before {
+    display: none;
+}
+
+.menuItem:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+    color: var(--primary-color);
+    transform: none;
+}
+
+.mItemSelected {
+    background: transparent;
+    color: var(--primary-color);
+    box-shadow: none;
+    font-weight: 500;
+    border-right: 3px solid var(--primary-color);
+}
+
+.mItemSelected:hover {
+    background: rgba(0, 0, 0, 0.02);
+    color: var(--primary-color);
+}
+
+.menuItem i {
+    font-size: var(--font-md);
+    width: 24px;
+    text-align: center;
+    margin-left: var(--spacing-sm);
+    transition: color 0.2s ease;
+    opacity: 0.7;
+}
+
+.menuItem:hover i,
+.mItemSelected i {
+    opacity: 1;
+    color: var(--primary-color);
+}
+
+/* نوار بالایی */
+.topbar {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    top: 0;
+    left: 0;
+    right: var(--sidebar-width);
+    height: var(--topbar-height);
+    background-color: var(--bg-light);
+    box-shadow: var(--box-shadow-sm);
+    padding: 0 var(--spacing-xl);
+    z-index: 50;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.topbar.expanded {
+    right: 0;
+}
+
+.topbar-start {
+    display: flex;
+    align-items: center;
+}
+
+.page-title {
+    font-size: var(--font-xl);
+    font-weight: 600;
+    color: var(--text-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 500px;
+    margin-right: var(--spacing-sm);
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xl);
+}
+
+.date-display {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: rgba(0, 0, 0, 0.03);
+    border-radius: var(--border-radius);
+    font-size: var(--font-sm);
+    color: var(--text-muted);
+}
+
+.date-display i {
+    font-size: var(--font-md);
+    color: var(--primary-color);
+}
+
+/* منوی مشخصات کاربر در هدر */
+.user-profile-dropdown {
+    position: relative;
+    /* margin-right: var(--spacing-md); */
+}
+
+.dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px 0 6px 6px;
+    border-radius: var(--border-radius-sm);
+    transition: var(--transition);
+}
+
+.dropdown-toggle:hover {
+    background-color: var(--bg-color);
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 4px rgba(43, 74, 205, 0.2);
+}
+
+.user-name {
+    font-weight: 500;
+    color: var(--text-color);
+    display: block;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 260px;
+    background-color: var(--bg-light);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 12px 0;
+    display: none;
+    z-index: 1000;
+    margin-top: 8px;
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.dropdown-user-info {
+    display: flex;
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    margin-bottom: 8px;
+}
+
+.dropdown-user-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    font-size: 1.2rem;
+    margin-left: 12px;
+    box-shadow: 0 4px 8px rgba(0, 126, 70, 0.25);
+}
+
+.dropdown-user-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.dropdown-user-name {
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 4px;
+    font-size: var(--font-md);
+}
+
+.dropdown-user-role {
+    font-size: var(--font-xs);
+    color: var(--text-light);
+}
+
+.dropdown-user-id {
+    font-size: var(--font-xs);
+    color: var(--text-light);
+    margin-top: 4px;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    text-decoration: none;
+    color: var(--text-color);
+    transition: var(--transition);
+}
+
+.dropdown-item:hover {
+    background-color: var(--bg-color);
+}
+
+.dropdown-item i {
+    margin-left: 12px;
+    font-size: var(--font-md);
+    color: var(--text-light);
+}
+
+.logout-item {
+    color: var(--error-color);
+}
+
+.logout-item:hover {
+    background-color: rgba(255, 86, 48, 0.08);
+}
+
+.logout-item i {
+    color: var(--error-color);
+}
+
+/* محتوای اصلی */
+#contentSection {
+    margin-right: var(--sidebar-width);
+    margin-top: var(--topbar-height);
+    padding: var(--spacing-xl);
+    min-height: calc(100vh - var(--topbar-height));
+    background-color: var(--bg-color);
+    transition: margin-right 0.3s ease;
+}
+
+#contentSection.expanded {
+    margin-right: 0;
+}
+
+/* کارت‌ها */
+.card {
+    background-color: var(--bg-light);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-lg);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    position: relative;
+    overflow: hidden;
+}
+
+.card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 4px;
+    background-color: var(--primary-color);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.card:hover::before {
+    opacity: 1;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-lg);
+}
+
+.card-title {
+    font-size: var(--font-lg);
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+/* دکمه‌ها */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: var(--border-radius-sm);
+    font-weight: 500;
+    font-size: var(--font-sm);
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+    border: none;
+}
+
+.btn i {
+    font-size: var(--font-md);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #ff5252;
+    transform: translateY(-2px);
+}
+
+.btn-outline {
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+}
+
+.btn-outline:hover {
+    background-color: rgba(0, 126, 70, 0.08);
+    transform: translateY(-2px);
+}
+
+/* فرم‌ها */
+.form-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.form-label {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    font-weight: 500;
+    color: var(--text-color);
+    font-size: var(--font-sm);
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius-sm);
+    background-color: var(--bg-light);
+    color: var(--text-color);
+    font-size: var(--font-sm);
+    transition: var(--transition);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 126, 70, 0.15);
+}
+
+/* جدول‌ها */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    background-color: var(--bg-light);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow-sm);
+    margin-bottom: var(--spacing-lg);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background-color: rgba(0, 0, 0, 0.02);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+th, td {
+    padding: 12px 16px;
+    text-align: right;
+}
+
+th {
+    font-weight: 600;
+    color: var(--text-color);
+    white-space: nowrap;
+}
+
+tbody tr {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+tbody tr:last-child {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.01);
+}
+
+/* اعلان‌ها */
+.alert {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--border-radius-sm);
+    margin-bottom: var(--spacing-lg);
+}
+
+.alert-success {
+    background-color: rgba(54, 179, 126, 0.1);
+    color: var(--success-color);
+}
+
+.alert-error {
+    background-color: rgba(255, 86, 48, 0.1);
+    color: var(--error-color);
+}
+
+.alert-warning {
+    background-color: rgba(255, 171, 0, 0.1);
+    color: var(--warning-color);
+}
+
+.alert-info {
+    background-color: rgba(0, 126, 70, 0.1);
+    color: var(--primary-color);
+}
+
+/* دکمه منو */
+.menuIcon {
+    position: fixed;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    bottom: var(--spacing-xl);
+    right: var(--spacing-xl);
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 126, 70, 0.3);
+    cursor: pointer;
+    z-index: 90;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.menuIcon i {
+    font-size: 20px;
+}
+
+.menuIcon:hover {
+    background-color: var(--primary-dark);
+    transform: scale(1.05);
+}
+
+.menuIcon.active {
+    background-color: var(--error-color);
+}
+
+/* ریسپانسیو */
+@media (max-width: 1024px) {
+    .page-title {
+        max-width: 350px;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar-toggle {
+        display: none;
+    }
+    
+    #sideBar {
+        right: -100%;
+        box-shadow: none;
+        z-index: 1000;
+        width: 280px;
+        transition: transform 0.3s ease, right 0.3s ease;
+    }
+    
+    #sideBar.open {
+        right: 0;
+        box-shadow: var(--box-shadow-lg);
+    }
+    
+    #sideBar.collapsed {
+        right: -100% !important;
+    }
+    
+    .topbar {
+        padding: 0 var(--spacing-md);
+        right: 0 !important;
+        width: 100%;
+        height: 60px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    #contentSection {
+        margin-right: 0 !important;
+        width: 100%;
+        padding: var(--spacing-md);
+    }
+    
+    .menuIcon {
+        position: static;
+        width: 38px;
+        height: 38px;
+        display: flex;
+        opacity: 1;
+        visibility: visible;
+        z-index: 10;
+        margin-left: var(--spacing-xs);
+        border-radius: 8px;
+    }
+    
+    .profile-section {
+        padding: var(--spacing-md);
+        margin-bottom: var(--spacing-md);
+    }
+    
+    .menu-section {
+        padding: 0;
+    }
+    
+    .menuCat {
+        margin-bottom: var(--spacing-xs);
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+    
+    .menuItem {
+        padding: 8px 12px;
+    }
+    
+    .menuItem i {
+        margin-left: 8px;
+    }
+    
+    .user-name {
+        display: none;
+    }
+    
+    .dropdown-toggle i {
+        display: none;
+    }
+    
+    .dropdown-menu {
+        left: 0;
+        right: auto;
+    }
+    
+    .popUpBg {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        backdrop-filter: blur(2px);
+    }
+    
+    .popUpBg.show {
+        display: block;
+        opacity: 1;
+    }
+    
+    .page-title {
+        font-size: var(--font-header);
+        max-width: 130px;
+        margin-right:0!important;
+    }
+    
+    .date-display {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        font-size: 11px;
+    }
+    
+    .pName {
+        font-size: var(--font-lg);
+    }
+    
+    .role-badge {
+        padding: 4px 12px;
+        font-size: 12px;
+    }
+    
+    .topbar-start {
+        display: flex;
+        align-items: center;
+    }
+    
+    .topbar-actions {
+        gap: var(--spacing-sm);
+    }
+    
+    .notification-tooltip {
+        right: -40px;
+    }
+    
+    .date-display {
+        margin-right: 0;
+    }
+    
+    .notification-icon {
+        margin-right: 0;
+    }
+    
+    .notification-icon span:not(.notification-badge) {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .topbar {
+        height: 55px;
+        padding: 0 var(--spacing-sm);
+    }
+    
+    #contentSection {
+        margin-top: 60px;
+        padding: var(--spacing-md);
+    }
+    
+    .card {
+        padding: var(--spacing-lg);
+    }
+    
+    .page-title {
+        font-size: var(--font-xs);
+        max-width: 150px;
+        /* margin-right: var(--spacing-xs); */
+    }
+    
+    .btn {
+        padding: 8px 12px;
+        font-size: var(--font-xs);
+    }
+    
+    .table-container {
+        border-radius: var(--border-radius-sm);
+        overflow-x: auto;
+    }
+    
+    th, td {
+        padding: 10px 12px;
+        font-size: var(--font-xs);
+    }
+    
+    .date-display {
+        padding: 4px 6px;
+        gap: 4px;
+    }
+    
+    .date-display i {
+        font-size: 12px;
+    }
+    
+    .notification-tooltip {
+        width: 250px;
+        right: -40px;
+    }
+    
+    .notification-icon {
+        width: inherit;
+        height: inherit;
+        margin: 0;
+        padding: var(--spacing-xs) var(--spacing-sm);
+        gap: 4px;
+    }
+}
+
+/* فوتر سایدبار */
+.sidebar-footer {
+    margin-top: auto;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    background-color: var(--bg-light);
+}
+
+.logout-button {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-sm);
+    color: var(--error-color);
+    font-weight: 400;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+    background: transparent;
+    box-shadow: none;
+}
+
+.logout-button:hover {
+    transform: none;
+    box-shadow: none;
+    background-color: rgba(255, 86, 48, 0.05);
+}
+
+.logout-button i {
+    font-size: var(--font-lg);
+}
+
+/* استایل‌های داشبورد */
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.dashboard-header {
+    margin-bottom: var(--spacing-xl);
+}
+
+.section-title {
+    font-size: var(--font-2xl);
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: var(--spacing-sm);
+}
+
+.section-description {
+    color: var(--text-light);
+    font-size: var(--font-md);
+    max-width: 800px;
+}
+
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-2xl);
+}
+
+.dashboard-card {
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-xl);
+    background-color: var(--bg-light);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow-sm);
+    transition: var(--transition);
+    text-decoration: none;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    height: 100%;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--box-shadow-hover);
+}
+
+.card-icon {
+    width: 60px;
+    height: 60px;
+    background-color: rgba(0, 126, 70, 0.1);
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.card-icon i {
+    font-size: 28px;
+    color: var(--primary-color);
+}
+
+.card-content {
+    flex: 1;
+}
+
+.card-title {
+    font-size: var(--font-lg);
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: var(--spacing-sm);
+}
+
+.card-description {
+    color: var(--text-light);
+    font-size: var(--font-sm);
+}
+
+/* دکمه‌های اقدام */
+.action-buttons {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+}
+
+.action-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    font-size: var(--font-sm);
+    font-weight: 500;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    text-decoration: none;
+}
+
+.action-btn:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.action-btn-outline {
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+}
+
+.action-btn-outline:hover {
+    background-color: rgba(0, 126, 70, 0.08);
+}
+
+.action-btn i {
+    font-size: var(--font-md);
+}
+
+@media (max-width: 768px) {
+    .dashboard-cards {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: var(--spacing-md);
+    }
+    
+    .section-title {
+        font-size: var(--font-xl);
+    }
+    
+    .section-description {
+        font-size: var(--font-sm);
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .dashboard-card {
+        padding: var(--spacing-lg);
+    }
+    
+    .card-icon {
+        width: 50px;
+        height: 50px;
+        margin-bottom: var(--spacing-md);
+    }
+    
+    .card-icon i {
+        font-size: 24px;
+    }
+}
+
+.dropdown-user-id {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-top: 3px;
+}
+
+/* اصلاح رفتار منوی کشویی برای دسکتاپ */
+@media (min-width: 769px) {
+    .dropdown-toggle {
+        cursor: pointer;
+    }
+    
+    .dropdown-menu {
+        left: 0;
+    }
+    
+    .dropdown-item {
+        cursor: pointer;
+    }
+}
+
+/* دکمه تغییر حالت سایدبار */
+.sidebar-toggle {
+    position: fixed;
+    top: calc(var(--topbar-height) / 2 - 20px);
+    right: var(--sidebar-width);
+    width: 40px;
+    height: 40px;
+    background-color: var(--bg-light);
+    color: var(--text-muted);
+    border: none;
+    border-left: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 0 0 0 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: right 0.3s ease, color 0.3s ease, background-color 0.3s ease;
+    z-index: 60;
+}
+
+.sidebar-toggle:hover {
+    color: var(--primary-color);
+    background-color: var(--bg-color);
+}
+
+.sidebar-toggle i {
+    font-size: 20px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* معکوس کردن منطق نمایش آیکون‌ها */
+/* مخفی کردن آیکون همبرگر در حالت عادی */
+#menuBars {
+    position: absolute;
+    opacity: 0;
+    transform: scale(0.5);
+}
+
+/* نمایش آیکون ضربدر در حالت عادی */
+#menuClose {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.sidebar-toggle.collapsed {
+    right: 0;
+}
+
+/* وقتی دکمه در حالت collapsed است، آیکون همبرگر را نمایش می‌دهیم و آیکون ضربدر را مخفی می‌کنیم */
+.sidebar-toggle.collapsed #menuBars {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.sidebar-toggle.collapsed #menuClose {
+    opacity: 0;
+    transform: scale(0.5);
+}
+
+.toggle-text {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .sidebar-toggle {
+        display: none; /* مخفی کردن دکمه در حالت موبایل */
+    }
+}
+
+/* استایل آیکون اعلان */
+.notification-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: rgba(0, 0, 0, 0.03);
+    border-radius: var(--border-radius);
+    font-size: var(--font-sm);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-right: var(--spacing-md);
+}
+
+.notification-icon:hover {
+    background-color: rgba(0, 126, 70, 0.1);
+}
+
+.notification-icon i {
+    font-size: var(--font-md);
+    color: var(--primary-color);
+}
+
+/* نشانگر تعداد اعلان‌ها */
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: var(--primary-color);
+    color: white;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 126, 70, 0.3);
+}
+
+/* تولتیپ اعلان‌ها */
+.notification-tooltip {
+    position: absolute;
+    top: 45px;
+    right: -50px;
+    width: 280px;
+    background-color: var(--bg-light);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    z-index: 1000;
+    display: none;
+    overflow: hidden;
+}
+
+.notification-icon:hover .notification-tooltip,
+.notification-tooltip:hover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* هدر تولتیپ */
+.notification-header {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-light);
+}
+
+.notification-title {
+    font-weight: bold;
+    font-size: 14px;
+    color: var(--text-color);
+}
+
+/* محتوای اعلان‌ها */
+.notification-content {
+    max-height: 250px;
+    overflow-y: auto;
+    padding: 15px;
+}
+
+.notification-message {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    font-size: 14px;
+    color: var(--text-color);
+}
+
+.notification-message:last-child {
+    border-bottom: none;
+}
+
+.notification-message.error {
+    color: var(--error-color);
+}
+
+/* استایل‌های جدید برای نمایش جزئیات درخواست‌های جانشینی */
+.notification-count {
+    font-weight: bold;
+    color: var(--text-color);
+    border-bottom: 2px solid var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.notification-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.notification-date {
+    font-size: 11px;
+    color: var(--text-muted);
+    direction: ltr;
+}
+
+.notification-item-type {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-bottom: 3px;
+}
+
+.notification-item-date {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-bottom: 3px;
+}
+
+.notification-item-reason {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 5px;
+    padding-right: 5px;
+    border-right: 2px solid var(--primary-color);
+    line-height: 1.4;
+}
+
+/* فوتر تولتیپ */
+.notification-footer {
+    padding: 10px 15px;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.view-all-link {
+    color: var(--primary-color);
+    font-size: 14px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.view-all-link:hover {
+    color: var(--primary-color-dark);
+    text-decoration: underline;
+}
+
+/* نشانگر در حال بارگذاری */
+.loading-indicator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    color: var(--text-muted);
+}
+
+/* استایل‌های واکنش‌گرا */
+@media (max-width: 768px) {
+    .notification-tooltip {
+        right: -150px!important;
+    }
+    .notification-message span {
+        display: inline-block !important;
+    }
+    
+    .notification-content {
+        max-height: 300px;
+        padding: 10px;
+    }
+    
+
+}
+
+@media (max-width: 480px) {
+    .notification-tooltip {
+        width:290px;
+        right: -40px;
+    }
+    
+    .notification-icon {
+        width: inherit;
+        height: inherit;
+        margin: 0;
+        padding: var(--spacing-xs) var(--spacing-sm);
+        gap: 4px;
+    }
+}
+
+@media (max-width: 768px) {
+    .notification-icon span:not(.notification-badge) {
+        display: none;
+    }
+    
+    .page-title {
+        max-width: 130px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-title {
+        max-width: 110px;
+        font-size: var(--font-xs)!important;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap');
+        
+/* استایل‌های اختصاصی برای دکمه منو در هدر */
+@media (max-width: 768px) {
+    .menuIcon {
+        position: static;
+        width: 38px;
+        height: 38px;
+        margin-left: 10px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 1;
+        visibility: visible;
+        background-color: var(--bg-light);
+        color: var(--text-color);
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .menuIcon:hover {
+        background-color: var(--bg-color);
+        transform: translateY(-2px);
+    }
+    
+    #mobileMenuBars {
+        font-size: 18px;
+        display: block;
+        transition: transform 0.3s ease;
+    }
+    
+    #mobileMenuClose {
+        font-size: 18px;
+        display: none;
+        transition: transform 0.3s ease;
+    }
+    
+    .menuIcon.active {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .menuIcon.active #mobileMenuBars {
+        display: none;
+    }
+    
+    .menuIcon.active #mobileMenuClose {
+        display: block;
+    }
+    
+    .topbar-start {
+        display: flex;
+        align-items: center;
+        flex: 1;
+    }
+    
+    .page-title {
+        margin-right: 8px;
+        font-size: var(--font-md);
+        max-width: 60%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-title {
+        font-size: var(--font-xs);
+        max-width: 70%;
+        line-height: 1.2;
+    }
+}
+
+/* استایل‌های جدید برای نمایش جزئیات درخ

@@ -1,0 +1,136 @@
+/* 
+  استایل‌های اختصاصی برای صفحه‌بندی با تم سایت
+  این فایل در صفحات مختلف قابل استفاده است
+*/
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 2rem 0;
+    direction: ltr; /* برای نمایش صحیح اعداد */
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: white;
+    border-radius: 12px;
+    padding: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.pagination-info {
+    margin: 0 15px;
+    color: var(--app-text-light);
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+}
+
+.pagination-btn {
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: none;
+    background-color: transparent;
+    color: var(--app-text);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.pagination-btn:hover {
+    background-color: var(--app-gray);
+}
+
+.pagination-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+}
+
+.pagination-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-btn i {
+    font-size: 16px;
+}
+
+.pagination-ellipsis {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    padding: 0 10px;
+    color: var(--app-text-light);
+}
+
+.page-size-selector {
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
+    background-color: white;
+    border-radius: 10px;
+    padding: 5px 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.page-size-selector label {
+    margin-left: 8px;
+    font-size: 13px;
+    color: var(--app-text-light);
+}
+
+.page-size-selector select {
+    border: none;
+    padding: 5px;
+    border-radius: 6px;
+    background-color: var(--app-gray);
+    font-size: 13px;
+    color: var(--app-text);
+    cursor: pointer;
+}
+
+/* استایل‌های پاسخگو */
+@media (max-width: 768px) {
+    .pagination {
+        padding: 4px;
+    }
+    
+    .pagination-btn {
+        min-width: 34px;
+        height: 34px;
+        font-size: 13px;
+    }
+    
+    .pagination-ellipsis {
+        height: 34px;
+        padding: 0 5px;
+    }
+    
+    .pagination-info {
+        display: none;
+    }
+    
+    .page-size-selector {
+        display: none;
+    }
+}
+
+/* افکت متحرک برای دکمه‌های صفحه‌بندی */
+.pagination-btn:active {
+    transform: scale(0.95);
+}
+
+.pagination-btn.active:hover {
+    background-color: var(--primary-dark);
+} 

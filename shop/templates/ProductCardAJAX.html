@@ -1,0 +1,64 @@
+{% load to_jalali_datetime %}
+{% for log in logs %}
+<div class="data-card 
+    {% if log.status == 'بررسی نشده' %}status-pending
+    {% elif log.status == 'موافقت شده' %}status-approved
+    {% elif log.status == 'رد شده' %}status-rejected
+    {% elif log.status == 'بررسی بیشتر' %}status-more-review
+    {% endif %}">
+    
+    <div class="card-header">
+        <div class="card-title">{{ log.name }}</div>
+        <div class="card-date">{{ log.created|to_jalali:'%Y/%m/%d' }}</div>
+    </div>
+    
+    <div class="card-content">
+        <div class="card-item">
+            <div class="card-label">برند</div>
+            <div class="card-value">{{ log.brand }}</div>
+        </div>
+        
+        <div class="card-item">
+            <div class="card-label">تعداد</div>
+            <div class="card-value">{{ log.count }}</div>
+        </div>
+        
+        <div class="card-item">
+            <div class="card-label">نوع</div>
+            <div class="card-value">{{ log.order_type }}</div>
+        </div>
+        
+        {% if log.description %}
+        <div class="card-description">{{ log.description }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="card-footer">
+        <div class="card-status">
+            <span class="status-container 
+                {% if log.status == 'بررسی نشده' %}status-pending
+                {% elif log.status == 'موافقت شده' %}status-approved
+                {% elif log.status == 'رد شده' %}status-rejected
+                {% elif log.status == 'بررسی بیشتر' %}status-more-review
+                {% endif %}">
+                {{ log.status }}
+            </span>
+            
+            <span class="status-container {% if log.completed %}status-done{% else %}status-not-done{% endif %}">
+                {% if log.completed %}انجام شده{% else %}انجام نشده{% endif %}
+            </span>
+        </div>
+        
+        <a href="{{ log.get_absolute_url }}" class="card-action">
+            <i class="fa-solid fa-eye"></i>
+            مشاهده
+        </a>
+    </div>
+</div>
+{% empty %}
+<div class="empty-state">
+    <i class="fa-solid fa-box-open"></i>
+    <h3>درخواستی یافت نشد</h3>
+    <p>در حال حاضر هیچ درخواست کالایی ثبت نشده است.</p>
+</div>
+{% endfor %} 

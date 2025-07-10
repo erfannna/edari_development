@@ -1,0 +1,3079 @@
+{% extends "base.html" %}
+{% load static %}
+{% block include %}
+<link rel="stylesheet" href="{% static 'vendor/persian-datepicker/css/persian-datepicker.min.css' %}">
+<style>
+    /* استایل‌های اختصاصی صفحه سوابق مرخصی - نسخه مینیمال */
+    :root {
+        /* ترکیب رنگی سایت */
+        --site-primary: var(--primary-color); /* رنگ اصلی سایت (سبز) */
+        --site-primary-dark: var(--primary-dark);
+        --site-primary-light: rgba(0, 126, 70, 0.1);
+        --site-secondary: var(--secondary-color);
+        
+        /* رنگ‌های اختصاصی برای افکت‌های خاص */
+        --app-red: #ef394e;
+        --app-red-light: #ff637d;
+        --app-gray: #f0f0f1;
+        --app-text: #424750;
+        --app-text-light: #767790;
+        --app-blue: #19bfd3;
+        --app-border: #e0e0e6;
+    }
+    
+    .logs-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        max-width: 1400px;
+        margin: 0 auto;
+        background-color: #f8f8f8;
+    }
+    
+    .logs-card {
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+        padding: 24px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 24px;
+        border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+    
+    /* استایل فیلترها */
+    .app-filters {
+        background-color: #fff;
+        border-radius: 10px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        border: 1px solid rgba(0, 0, 0, 0.03);
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+    
+    .filter-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        cursor: pointer;
+        background: linear-gradient(to left, #f5f5f5, #ffffff);
+        border-bottom: 1px solid var(--app-border);
+        transition: all 0.3s ease;
+    }
+    
+    .filter-header:hover {
+        background: linear-gradient(to left, #f0f0f0, #f9f9f9);
+    }
+    
+    .filter-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--app-text);
+        position: relative;
+        padding-right: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .filter-title i {
+        color: var(--site-primary);
+        font-size: 16px;
+    }
+    
+    .filter-title::before {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 16px;
+        background-color: var(--site-primary);
+        border-radius: 3px;
+    }
+    
+    .filter-arrow {
+        font-size: 14px;
+        color: var(--app-text-light);
+        transition: transform 0.3s ease;
+    }
+    
+    .filter-arrow.open {
+        transform: rotate(180deg);
+    }
+    
+    .filter-toggle-hint {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: var(--app-text-light);
+        background-color:rgba(0, 126, 70, 0.1) !important;
+        padding: 5px 10px;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .filter-header:hover .filter-toggle-hint {
+        background-color: rgba(0, 126, 70, 0.1);
+        color: var(--site-primary);
+    }
+    
+    .toggle-text {
+        font-size: 11px;
+        opacity: 0.8;
+        transition: all 0.3s ease;
+    }
+    
+    .filter-header:hover .toggle-text {
+        opacity: 1;
+    }
+    
+    @media (max-width: 768px) {
+        .toggle-text {
+            display: none;
+        }
+        
+        .filter-toggle-hint {
+            padding: 5px;
+            background-color: transparent;
+        }
+        
+        .filter-content.open {
+            padding: 15px;
+        }
+        
+        .filter-item {
+            min-width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .filter-item select, 
+        .filter-item input[type="text"],
+        .date-input-container input,
+        .filter-search {
+            /* استایل یکسان برای همه input ها و select ها */
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--app-border);
+            border-radius: 8px;
+            font-size: 14px;
+            height: 40px;
+        }
+        
+        .date-input-container::after {
+            left: 12px;
+            font-size: 14px;
+        }
+        
+        .export-btn {
+            width:100%;
+            margin: 13px 0;
+            justify-content: center;
+            height: 42px;
+            font-size: 13px;
+            border-radius: 8px;
+        }
+    }
+    
+    .filter-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+    
+    .filter-content.open {
+        max-height: 500px;
+        padding: 20px;
+    }
+    
+    .filter-section {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        gap: 16px;
+    }
+    
+    .filter-item {
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    .filter-item label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: var(--app-text);
+        font-size: 13px;
+    }
+    
+    .filter-item select, 
+    .filter-item input[type="text"] {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--app-border);
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 14px;
+        background-color: #fff;
+        transition: all 0.2s ease;
+    }
+    
+    .filter-item select:focus, 
+    .filter-item input:focus {
+        outline: none;
+        border-color: var(--site-primary);
+        box-shadow: 0 0 0 2px var(--site-primary-light);
+    }
+    
+    /* استایل های جدید date picker */
+    .date-input-container {
+        position: relative;
+        width: 100%;
+    }
+    
+    .date-input-container input {
+        width: 100%;
+        padding: 10px 40px 10px 12px;
+        border: 1px solid var(--app-border);
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 14px;
+        background-color: #fff;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    
+    .date-input-container input:focus {
+        outline: none;
+        border-color: var(--site-primary);
+        box-shadow: 0 0 0 2px var(--site-primary-light);
+    }
+    
+    .date-input-container::after {
+        content: '\f133';
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--app-text-light);
+        pointer-events: none;
+        transition: all 0.3s ease;
+    }
+    
+    .date-input-container:hover::after {
+        color: var(--site-primary);
+    }
+    
+    /* زیباسازی persian-datepicker */
+    .datepicker-plot-area {
+        font-family: 'Vazirmatn', sans-serif !important;
+        border-radius: 12px !important;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15) !important;
+        border: none !important;
+        animation: datepicker-fade-in 0.2s ease !important;
+    }
+    
+    @keyframes datepicker-fade-in {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .datepicker-plot-area .datepicker-day-view .table-days td span,
+    .datepicker-plot-area .datepicker-year-view .year-item,
+    .datepicker-plot-area .datepicker-month-view .month-item {
+        border-radius: 8px !important;
+        transition: all 0.3s ease !important;
+        position: relative;
+    }
+    
+    .datepicker-plot-area .datepicker-day-view .table-days td span:hover,
+    .datepicker-plot-area .datepicker-year-view .year-item:hover,
+    .datepicker-plot-area .datepicker-month-view .month-item:hover {
+        background-color: rgba(0, 126, 70, 0.1) !important;
+        color: var(--site-primary) !important;
+        transform: scale(1.1) !important;
+    }
+    
+    .datepicker-plot-area .datepicker-day-view .table-days td.selected span,
+    .datepicker-plot-area .datepicker-year-view .year-item.selected,
+    .datepicker-plot-area .datepicker-month-view .month-item.selected {
+        background-color: var(--site-primary) !important;
+        color: white !important;
+        box-shadow: 0 3px 8px rgba(0, 126, 70, 0.3) !important;
+        transform: scale(1.1) !important;
+    }
+    
+    .datepicker-plot-area .datepicker-day-view .table-days td span.today {
+        box-shadow: 0 0 0 2px var(--site-primary) inset !important;
+        color: var(--site-primary) !important;
+        background-color: rgba(0, 126, 70, 0.05) !important;
+        font-weight: bold !important;
+    }
+    
+    .datepicker-plot-area .datepicker-header {
+        background: linear-gradient(to left, #f5f5f5, #ffffff) !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+    }
+    
+    .datepicker-plot-area .datepicker-header .btn-next,
+    .datepicker-plot-area .datepicker-header .btn-prev,
+    .datepicker-plot-area .datepicker-header .btn-switch {
+        background-color: #f5f5f5 !important;
+        border-radius: 8px !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    }
+    
+    .datepicker-plot-area .datepicker-header .btn-next:hover,
+    .datepicker-plot-area .datepicker-header .btn-prev:hover,
+    .datepicker-plot-area .datepicker-header .btn-switch:hover {
+        background-color: rgba(0, 126, 70, 0.1) !important;
+        color: var(--site-primary) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .datepicker-plot-area .toolbox .btn-today {
+        background-color: var(--site-primary) !important;
+        color: white !important;
+        border-radius: 20px !important;
+        box-shadow: 0 2px 5px rgba(0, 126, 70, 0.2) !important;
+        transition: all 0.3s ease !important;
+        border: none !important;
+    }
+    
+    .datepicker-plot-area .toolbox .btn-today:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 8px rgba(0, 126, 70, 0.3) !important;
+        background-color: var(--site-primary-dark) !important;
+    }
+    
+    .export-btn {
+        background-color: var(--site-primary);
+        color: white;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        font-weight: 700;
+        margin-top: 20px;
+        box-shadow: 0 2px 5px rgba(0, 126, 70, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .export-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+        transition: all 0.3s ease;
+    }
+    
+    .export-btn:hover {
+        background-color: var(--site-primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 126, 70, 0.3);
+    }
+    
+    .export-btn:hover::before {
+        opacity: 0.8;
+    }
+    
+    .export-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 5px rgba(0, 126, 70, 0.2);
+    }
+    
+    .export-btn i {
+        font-size: 16px;
+        position: relative;
+        z-index: 1;
+        transition: all 0.3s ease;
+    }
+    
+    .export-btn:hover i {
+        transform: scale(1.1);
+    }
+    
+    /* استایل جدول زیبا و جذاب */
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        position: relative;
+        border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+    
+    /* استایل نوار فیلتر جدید */
+    .table-filter-bar {
+        display: flex !important;
+        align-items: center;
+        padding: 14px 20px;
+        background: linear-gradient(to left, #f9f9f9, #ffffff);
+        border-bottom: 1px solid var(--app-border);
+        border-radius: 12px 12px 0 0;
+        position: sticky;
+        top: 0;
+        z-index: 15;
+        margin-bottom: 15px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .filter-search-wrapper {
+        position: relative;
+        flex: 1;
+        max-width: 400px;
+    }
+    
+    .filter-search {
+        width: 100%;
+        padding: 10px 40px 10px 12px;
+        border: 1px solid var(--app-border);
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        background-color: white;
+    }
+    
+    .filter-search:focus {
+        outline: none;
+        border-color: var(--site-primary);
+        box-shadow: 0 0 0 3px var(--site-primary-light);
+    }
+    
+    .filter-search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--app-text-light);
+        pointer-events: none;
+        transition: all 0.3s ease;
+    }
+    
+    .filter-search:focus + .filter-search-icon {
+        color: var(--site-primary);
+    }
+    
+    .filter-options {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-right: 20px;
+    }
+    
+    .filter-select {
+        padding: 10px 12px;
+        border: 1px solid var(--app-border);
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 14px;
+        background-color: white;
+        min-width: 120px;
+        transition: all 0.3s ease;
+    }
+
+    .filter-select:focus {
+        outline: none;
+        border-color: var(--site-primary);
+        box-shadow: 0 0 0 3px var(--site-primary-light);
+    }
+    
+    .filter-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    
+    .filter-chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 12px;
+        background-color: var(--site-primary-light);
+        color: var(--site-primary);
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        gap: 5px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 1px solid transparent;
+    }
+    
+    .filter-chip:hover {
+        background-color: rgba(0, 126, 70, 0.15);
+        border-color: rgba(0, 126, 70, 0.2);
+    }
+    
+    .filter-chip i {
+        font-size: 10px;
+    }
+    
+    .filter-chip.active {
+        background-color: var(--site-primary);
+        color: white;
+    }
+    
+    /* رنگ‌بندی برای چیپ‌های فیلتر وضعیت */
+    .filter-chip.status-all {
+        background-color: #f0f0f1;
+        color: #767790;
+    }
+    
+    .filter-chip.status-all.active {
+        background-color: #767790;
+        color: white;
+    }
+    
+    .filter-chip.status-pending {
+        background-color: #fff4dd;
+        color: #ff9a00;
+    }
+    
+    .filter-chip.status-pending.active {
+        background-color: #ff9a00;
+        color: white;
+    }
+    
+    .filter-chip.status-approved {
+        background-color: rgba(0, 180, 90, 0.1);
+        color: #00b45a;
+    }
+    
+    .filter-chip.status-approved.active {
+        background-color: #00b45a;
+        color: white;
+    }
+    
+    .filter-chip.status-rejected {
+        background-color: #ffe3e5;
+        color: var(--app-red);
+    }
+    
+    .filter-chip.status-rejected.active {
+        background-color: var(--app-red);
+        color: white;
+    }
+    
+    .filter-chip.status-more-review {
+        background-color: rgba(25, 118, 210, 0.1);
+        color: #1976d2;
+    }
+    
+    .filter-chip.status-more-review.active {
+        background-color: #1976d2;
+        color: white;
+    }
+
+    .filter-chip.status-done {
+        background-color: rgba(0, 126, 70, 0.15);
+        color: var(--site-primary-dark);
+    }
+    
+    .filter-chip.status-done.active {
+        background-color: var(--site-primary-dark);
+        color: white;
+    }
+    
+    .filter-chip.status-not-done {
+        background-color: #f0f0f1;
+        color: #767790;
+    }
+    
+    .filter-chip.status-not-done.active {
+        background-color: #767790;
+        color: white;
+    }
+    
+    /* پیام "نتیجه‌ای یافت نشد" */
+    .no-results-message td {
+        padding: 30px !important;
+    }
+    
+    .no-results-message i {
+        margin-bottom: 10px;
+        opacity: 0.7;
+    }
+    
+    /* حالت ریسپانسیو برای نوار فیلتر */
+    @media (max-width: 768px) {
+        .table-filter-bar {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+            padding: 12px;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 15;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 15px;
+        }
+        
+        .filter-search-wrapper {
+            max-width: 100%;
+            margin-bottom: 8px;
+        }
+        
+        .filter-options {
+            margin-right: 0;
+            flex-direction: column;
+            width: 100%;
+        }
+        
+        .filter-select {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .filter-chips-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 5px 0;
+            position: relative;
+        }
+        
+        .filter-chips {
+            display: inline-flex;
+            flex-wrap: nowrap;
+            width: max-content;
+            padding: 2px;
+        }
+        
+        .filter-chip {
+            flex: 0 0 auto;
+            white-space: nowrap;
+            margin-left: 5px;
+            font-size: 12px;
+            padding: 6px 10px;
+        }
+        
+        /* اضافه کردن نشانگر اسکرول افقی */
+        .filter-chips-wrapper::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(to left, 
+                transparent, 
+                rgba(0, 126, 70, 0.2) 30%, 
+                rgba(0, 126, 70, 0.2) 70%, 
+                transparent);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        /* نمایش نوار فیلتر در حالت کارت */
+        .card-mode .table-filter-bar {
+            display: flex;
+            position: sticky;
+            top: 0;
+            z-index: 15;
+        }
+    }
+    
+    /* تغییر چیدمان نوار فیلتر در صفحات میان اندازه */
+    @media (max-width: 1380px) {
+        .table-filter-bar {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .filter-search-wrapper {
+            max-width: 100%;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .filter-options {
+            margin-right: 0;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .filter-select {
+            width: 100%;
+            max-width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .filter-chips-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 5px 0;
+            position: relative;
+        }
+        
+        .filter-chips {
+            display: inline-flex;
+            flex-wrap: nowrap;
+            width: max-content;
+            padding: 2px;
+        }
+        
+        .filter-chip {
+            flex: 0 0 auto;
+            white-space: nowrap;
+            margin-left: 5px;
+        }
+        
+        /* نشانگر اسکرول افقی */
+        .filter-chips-wrapper::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(to left, 
+                transparent, 
+                rgba(0, 126, 70, 0.2) 30%, 
+                rgba(0, 126, 70, 0.2) 70%, 
+                transparent);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+    }
+    
+    .app-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 13px;
+        min-width: 800px; /* تضمین می‌کند که جدول همیشه حداقل عرض را داشته باشد */
+    }
+    
+        .app-table thead {
+        background: linear-gradient(to bottom, #f9f9f9, #f0f0f0);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .app-table th {
+            padding: 16px 14px;
+            font-weight: 700;
+        color: #333;
+            text-align: center;
+            white-space: nowrap;
+            border-bottom: 2px solid var(--site-primary-light);
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+    
+    .app-table th i.sort-icon {
+        margin-right: 5px;
+        font-size: 12px;
+        opacity: 0.3;
+        transition: all 0.3s ease;
+    }
+    
+    .app-table th.active-sort i.sort-icon {
+        opacity: 1;
+        color: var(--site-primary);
+    }
+        
+        .app-table th:first-child {
+            border-top-right-radius: 12px;
+        }
+        
+        .app-table th:last-child {
+            border-top-left-radius: 12px;
+        }
+        
+        .app-table th:hover {
+            background-color: rgba(0, 126, 70, 0.05);
+            color: var(--site-primary);
+        }
+        
+    .app-table th:hover i.sort-icon {
+        opacity: 0.7;
+        }
+        
+        .app-table td {
+        padding: 14px;
+        color: var(--app-text);
+        text-align: center;
+        border-bottom: 1px solid #f2f2f2;
+        transition: all 0.25s ease;
+        vertical-align: middle;
+    }
+    
+    /* محدود کردن طول متن و نمایش سه نقطه - در حالت معمولی */
+    /* برای حالت عادی، کلاس truncate-text را نگه می‌داریم اما در موبایل آن را لغو می‌کنیم */
+    .truncate-text {
+        max-width: 150px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        display: inline-block;
+        position: relative;
+    }
+    
+    /* حذف نمایش tooltip با متن کامل هنگام هاور */
+    /* .truncate-text:hover {
+        overflow: visible;
+        white-space: normal;
+        z-index: 20;
+    }
+    
+    .truncate-text:hover::after {
+        content: attr(data-full-text);
+        position: absolute;
+        right: 0;
+        top: 100%;
+        background-color: #fff;
+        border: 1px solid #eee;
+        border-radius: 6px;
+        padding: 8px 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        width: max-content;
+        max-width: 300px;
+        text-align: right;
+        font-size: 12px;
+        z-index: 25;
+        white-space: normal;
+        direction: rtl;
+    } */
+    
+    .app-table tbody tr {
+        transition: background-color 0.2s ease; /* فقط تغییر رنگ پس‌زمینه، بدون انیمیشن حرکتی */
+    }
+    
+    /* رنگ‌آمیزی متناوب سطرها */
+    .app-table tbody tr:nth-child(even) {
+        background-color: rgba(0, 126, 70, 0.02);
+    }
+    
+    .app-table tbody tr:last-child td:first-child {
+        border-bottom-right-radius: 12px;
+    }
+    
+    .app-table tbody tr:last-child td:last-child {
+        border-bottom-left-radius: 12px;
+    }
+    
+    .app-table tbody tr:hover {
+        background-color: rgba(0, 126, 70, 0.05);
+        /* حذف انیمیشن‌های transform و box-shadow */
+        /* transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); */
+    }
+    
+    /* تغییر رنگ تمام سلول‌های یک ستون هنگام هاور روی عنوان ستون */
+    .app-table th:hover::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: var(--site-primary);
+    }
+
+    .app-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+    
+    /* استایل وضعیت‌ها */
+    .status-container {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        min-width: 85px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .status-container:hover {
+        /* حذف انیمیشن transform */
+        /* transform: translateY(-1px); */
+        /* box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1); */
+    }
+    
+    /* بررسی نشده - نارنجی */
+    .status-container.pending,
+    .status-pending {
+        background-color: #fff4dd;
+        color: #ff9a00;
+        border: 1px solid rgba(255, 154, 0, 0.2);
+    }
+    
+    /* موافقت شده - سبز */
+    .status-container.approved,
+    .status-approved {
+        background-color: rgba(0, 180, 90, 0.1);
+        color: #00b45a;
+        border: 1px solid rgba(0, 180, 90, 0.2);
+    }
+    
+    /* انجام شده - سبز تیره */
+    .status-container.done,
+    .status-done {
+        background-color: rgba(0, 126, 70, 0.15);
+        color: var(--site-primary-dark);
+        border: 1px solid rgba(0, 126, 70, 0.25);
+    }
+    
+    /* انجام نشده - خاکستری */
+    .status-container.not-done,
+    .status-not-done {
+        background-color: #f0f0f1;
+        color: #767790;
+        border: 1px solid rgba(118, 119, 144, 0.2);
+    }
+    
+    /* بررسی بیشتر - آبی */
+    .status-container.more-review,
+    .status-more-review {
+        background-color: rgba(25, 118, 210, 0.1);
+        color: #1976d2;
+        border: 1px solid rgba(25, 118, 210, 0.2);
+    }
+    
+    /* رد شده - قرمز */
+    .status-container.rejected,
+    .status-rejected {
+        background-color: #ffe3e5;
+        color: var(--app-red);
+        border: 1px solid rgba(239, 57, 78, 0.2);
+    }
+    
+    .action-btn {
+        background-color: var(--site-primary-light);
+        color: var(--site-primary);
+        border: none;
+        border-radius: 8px;
+        padding: 8px 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .action-btn:hover {
+        background-color: var(--site-primary);
+        color: white;
+        /* حذف انیمیشن‌های transform و box-shadow */
+        /* transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 126, 70, 0.2); */
+    }
+    
+
+    
+    .app-spinner {
+        width: 40px;
+        height: 40px;
+        position: relative;
+    }
+    
+    .app-spinner::before {
+        content: "";
+        box-sizing: border-box;
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 3px solid #e0e0e6;
+        border-top-color: var(--site-primary);
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+    
+    .empty-message {
+        text-align: center;
+        padding: 40px;
+        color: var(--app-text-light);
+        font-size: 14px;
+        background: linear-gradient(to bottom, #ffffff, #f9f9f9);
+        border-radius: 12px;
+    }
+    
+    /* استایل‌های انتخاب‌گر تاریخ شمسی */
+    .datepicker-plot-area {
+        font-family: inherit;
+        border-radius: var(--border-radius);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .datepicker-plot-area .datepicker-day-view .table-days td.selected span,
+    .datepicker-plot-area .datepicker-month-view .month-item.selected, 
+    .datepicker-plot-area .datepicker-year-view .year-item.selected {
+        background-color: var(--site-primary) !important;
+        color: white !important;
+        text-shadow: none !important;
+        border: none !important;
+        box-shadow: 0 2px 5px rgba(0, 126, 70, 0.3) !important;
+    }
+    
+    .datepicker-plot-area .datepicker-day-view .table-days td span:hover,
+    .datepicker-plot-area .datepicker-month-view .month-item:hover, 
+    .datepicker-plot-area .datepicker-year-view .year-item:hover {
+        background-color: var(--site-primary-light) !important;
+        color: var(--site-primary) !important;
+        text-shadow: none !important;
+    }
+    
+    .datepicker-plot-area .datepicker-header {
+        background-color: var(--site-primary);
+        color: white;
+        padding: 10px;
+    }
+    
+    .datepicker-plot-area .datepicker-header .btn-next,
+    .datepicker-plot-area .datepicker-header .btn-prev,
+    .datepicker-plot-area .datepicker-header .btn-switch {
+        color: white !important;
+        font-weight: bold;
+    }
+    
+    .datepicker-plot-area .toolbox .btn-today {
+        background-color: var(--site-primary-light);
+        color: var(--site-primary);
+        border: 1px solid var(--site-primary);
+        border-radius: 5px;
+        padding: 5px 10px;
+    }
+    
+    .datepicker-plot-area .toolbox .btn-today:hover {
+        background-color: var(--site-primary);
+        color: white;
+    }
+    
+    /* نمایش آیکون تقویم در ورودی تاریخ */
+    .date-input-container {
+        position: relative;
+    }
+    
+    .date-input-container::after {
+        content: "\f073";
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        position: absolute;
+        top: 50%;
+        left: 10px;
+        transform: translateY(-50%);
+        color: var(--app-text-light);
+        pointer-events: none;
+    }
+    
+    .date-input-container input {
+        padding-left: 30px;
+    }
+    
+    /* فعال کردن حالت مخصوص برای ورودی‌های تاریخ */
+    input[type="date"] {
+        cursor: pointer;
+        position: relative;
+        color: var(--app-text);
+    }
+    
+    input[type="date"]:focus {
+        border-color: var(--site-primary);
+        box-shadow: 0 0 0 2px var(--site-primary-light);
+    }
+    
+    /* دکمه تغییر حالت نمایش جدول/کارت */
+    .view-toggle {
+        display: none; /* مخفی در حالت دسکتاپ */
+        margin-bottom: 15px;
+        text-align: center;
+    }
+    
+    .view-toggle-buttons {
+        display: inline-flex;
+        background-color: #f5f5f5;
+        border-radius: 30px;
+        padding: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .view-toggle-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 15px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background-color: transparent;
+        border: none;
+        font-family: inherit;
+        font-size: 13px;
+        color: var(--app-text);
+        gap: 6px;
+    }
+    
+    .view-toggle-btn.active {
+        background-color: white;
+        color: var(--site-primary);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .view-toggle-btn i {
+        font-size: 14px;
+    }
+    
+    /* استایل کارت برای نمایش موبایل */
+    .cards-container {
+        display: none; /* مخفی در حالت دسکتاپ */
+    }
+    
+    .data-card {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        padding: 10px;
+        margin-bottom: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .data-card::before {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 100%;
+        width: 4px;
+        background-color: var(--site-primary);
+        opacity: 0.6;
+    }
+    
+    .data-card:active {
+        transform: scale(0.98);
+    }
+    
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 8px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .card-title {
+        font-weight: 700;
+        font-size: 14px;
+        color: var(--app-text);
+        margin-left: 8px;
+        line-height: 1.3;
+        word-break: break-word;
+    }
+    
+    .card-date {
+        font-size: 11px;
+        color: var(--app-text-light);
+        background-color: rgba(0, 0, 0, 0.03);
+        padding: 3px 8px;
+        border-radius: 10px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+    
+    .card-content {
+        margin-bottom: 10px;
+    }
+    
+    .card-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 6px;
+        position: relative;
+    }
+    
+    .card-label {
+        min-width: 90px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--app-text-light);
+        position: relative;
+        padding-right: 10px;
+    }
+    
+    .card-label::before {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 12px;
+        background-color: var(--site-primary-light);
+        border-radius: 3px;
+    }
+    
+    .card-value {
+        flex: 1;
+        font-size: 12px;
+        color: var(--app-text);
+        font-weight: 500;
+        padding-right: 8px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 140px;
+    }
+    
+    .card-description {
+        background-color: rgba(0, 126, 69, 0.748);
+        padding: 8px 10px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        font-size: 12px;
+        word-break: break-word;
+        position: relative;
+        line-height: 1.4;
+        max-height: 60px; /* ارتفاع تقریبی دو خط */
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2; /* دو خط نمایش داده شود */
+        -webkit-box-orient: vertical;
+    }
+    
+
+     
+    .card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        padding-top: 10px;
+    }
+    
+    .card-status {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    
+    .card-status .status-container {
+        min-width: 0;
+        font-size: 10px;
+        padding: 3px 8px;
+    }
+    
+    .card-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--site-primary);
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 5px 12px;
+        gap: 4px;
+        font-weight: 500;
+        font-size: 12px;
+        text-decoration: none;
+        box-shadow: 0 3px 8px rgba(0, 126, 70, 0.15);
+        transition: all 0.2s ease;
+    }
+    
+    .card-action:active {
+        transform: translateY(2px);
+        box-shadow: 0 1px 3px rgba(0, 126, 70, 0.15);
+    }
+    
+    .card-action i {
+        font-size: 12px;
+    }
+
+    /* استایل‌های مختلف کارت بر اساس وضعیت */
+    .data-card.status-pending::before {
+        background-color: #ff9a00;
+    }
+    
+    .data-card.status-approved::before {
+        background-color: #00b45a;
+    }
+    
+    .data-card.status-rejected::before {
+        background-color: var(--app-red);
+    }
+    
+    .data-card.status-more-review::before {
+        background-color: #1976d2;
+    }
+    
+    .data-card.status-done::before {
+        background-color: var(--site-primary-dark);
+    }
+    
+    .data-card.status-not-done::before {
+        background-color: #767790;
+    }
+
+    /* متن‌های طولانی در جدول */
+    .app-table td {
+        max-width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* متن‌های طولانی در کارت‌ها */
+    .card-value {
+        max-width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .card-description {
+        max-height: 80px;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        text-overflow: ellipsis;
+    }
+
+    /* نمایش موبایل برای جدول و کارت‌ها */
+    @media (max-width: 768px) {
+        .app-filters {
+            padding: 16px;
+        }
+        
+        .logs-card {
+            padding: 16px;
+            border-radius: 10px;
+        }
+        
+        /* نمایش دکمه تغییر حالت */
+        .view-toggle {
+            display: block;
+        }
+        
+        /* نمایش کارت‌ها در حالت موبایل */
+        .cards-container {
+            display: block;
+        }
+        
+        /* مخفی کردن جدول به صورت پیش‌فرض در موبایل */
+    .table-container {
+            display: none;
+        }
+        
+        /* حالت table-mode: جدول نمایش داده شود و کارت‌ها مخفی باشند */
+        .table-mode .table-container {
+            display: block;
+        overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .table-mode .cards-container {
+            display: none;
+        }
+        
+        /* حالت card-mode (پیش‌فرض): کارت‌ها نمایش داده شوند و جدول مخفی باشد */
+        .card-mode .cards-container {
+            display: block;
+        }
+        
+        .card-mode .table-container {
+            display: none;
+        }
+        
+        /* نمایش نوار فیلتر در هر دو حالت */
+    .table-filter-bar {
+        display: flex !important;
+        position: sticky;
+        top: 0;
+        z-index: 15;
+            background-color: white;
+            border-radius: 10px;
+        margin-bottom: 15px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+        .app-table {
+            width: auto;
+            table-layout: auto;
+        }
+        
+        .app-table th, 
+        .app-table td {
+            padding: 12px 8px;
+            font-size: 12px;
+            white-space: nowrap;
+            min-width: 80px;
+        }
+        
+        /* اصلاح شده: حفظ رفتار text-overflow در موبایل */
+        .app-table .truncate-text {
+            max-width: 150px; /* حفظ عرض محدود در موبایل */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* متون کوتاه شده در کارت‌ها */
+        .card-value {
+            max-width: 150px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* یک خطی بودن توضیحات در کارت‌ها */
+        .card-description {
+            max-height: 38px;
+            line-height: 1.4;
+            -webkit-line-clamp: 1;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* راهنمای اسکرول افقی برای کاربران */
+        .table-container::after {
+            content: "برای مشاهده همه اطلاعات، به صورت افقی اسکرول کنید";
+            display: block;
+            text-align: center;
+            color: var(--app-text-light);
+            font-size: 11px;
+            padding: 8px 0;
+            background-color: rgba(0, 126, 70, 0.05);
+            border-radius: 0 0 12px 12px;
+            position: sticky;
+            left: 0;
+        }
+    }
+
+    /* استایل اسکلتون برای حالت بارگذاری */
+    .skeleton-loader {
+        display: inline-block;
+        width: 100%;
+        height: 15px;
+        background: linear-gradient(90deg, #f0f0f0 25%, #e2e2e2 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        border-radius: 4px;
+        animation: skeleton-animation 1.5s infinite ease-in-out;
+    }
+    
+    .skeleton-cell {
+        position: relative;
+        padding: 14px !important;
+    }
+    
+    .skeleton-row td:nth-child(1) .skeleton-loader {
+        width: 80%;
+        height: 18px;
+    }
+    
+    .skeleton-row td:nth-child(2) .skeleton-loader {
+        width: 60%;
+    }
+    
+    .skeleton-row td:nth-child(3) .skeleton-loader {
+        width: 40%;
+    }
+    
+    .skeleton-row td:nth-child(4) .skeleton-loader {
+        width: 70%;
+    }
+    
+    .skeleton-row td:nth-child(5) .skeleton-loader {
+        width: 90%;
+        height: 18px;
+    }
+    
+    .skeleton-row td:nth-child(6) .skeleton-loader {
+        width: 70%;
+    }
+    
+    .skeleton-row td:nth-child(7) .skeleton-loader {
+        width: 80%;
+    }
+    
+    .skeleton-row td:nth-child(8) .skeleton-loader,
+    .skeleton-row td:nth-child(9) .skeleton-loader {
+        width: 70%;
+        height: 20px;
+        border-radius: 12px;
+    }
+    
+    .skeleton-row td:nth-child(10) .skeleton-loader {
+        width: 40px;
+        height: 36px;
+        border-radius: 8px;
+    }
+    
+    @keyframes skeleton-animation {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+    }
+    
+    /* اسکلتون برای کارت‌ها */
+    .skeleton-card {
+        position: relative;
+        background-color: white;
+        border-radius: 16px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        padding: 16px;
+        margin-bottom: 20px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+    
+    .skeleton-card::before {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 100%;
+        width: 4px;
+        background-color: #e0e0e6;
+    }
+    
+    .skeleton-card-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .skeleton-card-title {
+        width: 60%;
+        height: 20px;
+    }
+    
+    .skeleton-card-date {
+        width: 30%;
+        height: 18px;
+    }
+    
+    .skeleton-card-content {
+        margin-bottom: 16px;
+    }
+    
+    .skeleton-card-item {
+        display: flex;
+        margin-bottom: 12px;
+    }
+    
+    .skeleton-card-label {
+        width: 30%;
+        height: 16px;
+        margin-left: 15px;
+    }
+    
+    .skeleton-card-value {
+        width: 65%;
+        height: 16px;
+    }
+    
+    .skeleton-card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 16px;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        padding-top: 16px;
+    }
+    
+    .skeleton-card-status {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .skeleton-status {
+        width: 70px;
+        height: 26px;
+        border-radius: 12px;
+    }
+    
+    .skeleton-card-action {
+        width: 80px;
+        height: 36px;
+        border-radius: 30px;
+    }
+
+    /* یک خطی بودن توضیحات در کارت‌ها */
+    .card-description {
+        max-height: 60px;
+        line-height: 1.4;
+        -webkit-line-clamp: 2;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        position: relative;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 10px 15px;
+        padding: 12px 15px;
+        background: #f9f9f9;
+        border-radius: 8px;
+    }
+    
+    .description-title {
+        font-weight: bold;
+        margin-bottom: 8px;
+        color: var(--site-primary);
+        font-size: 14px;
+    }
+    
+    .description-content {
+        line-height: 1.4;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .card-description::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 20px;
+        background: linear-gradient(to bottom, rgba(249, 249, 249, 0), rgba(249, 249, 249, 0.9));
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+    
+    .card-description.expanded {
+        max-height: 500px;
+        -webkit-line-clamp: initial;
+    }
+    
+    .card-description.expanded::after {
+        opacity: 0;
+    }
+
+    /* استایل‌های بهینه‌سازی شده برای حالت موبایل */
+    @media (max-width: 768px) {
+        .app-filters {
+            margin-bottom: 15px;
+        }
+        
+        .filter-section {
+            gap: 10px;
+        }
+        
+        .filter-content.open {
+            padding: 15px;
+            max-height: none;
+        }
+        
+        .filter-item {
+            min-width: 100%;
+            margin-bottom: 12px;
+        }
+        
+        .filter-item label {
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+        
+        .filter-item select, 
+        .filter-item input[type="text"],
+        .date-input-container input,
+        .filter-search {
+            /* استایل یکسان برای همه input ها و select ها */
+            /* width: calc(100% - 30px); */
+            padding: 10px 12px;
+            border: 1px solid var(--app-border);
+            border-radius: 8px;
+            font-size: 14px;
+            height: 40px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            /* margin: 0 15px; */
+        }
+        
+        .filter-item select:focus, 
+        .filter-item input:focus,
+        .date-input-container input:focus,
+        .filter-search:focus {
+            border-color: var(--site-primary);
+            box-shadow: 0 0 0 2px var(--site-primary-light);
+        }
+        
+        .date-input-container::after {
+            left: 17px;
+            font-size: 14px;
+        }
+        
+        .export-btn {
+            width:100%;
+            margin: 13px 0;
+            justify-content: center;
+            height: 42px;
+            font-size: 13px;
+            border-radius: 8px;
+        }
+        
+        .filter-item:last-child {
+            margin-bottom: 5px;
+        }
+
+        /* اصلاح فاصله برای کامپوننت‌های جستجو و فیلتر */
+        .table-filter-bar .filter-search-wrapper {
+            width: calc(100% - 30px);
+            margin: 0 15px;
+        }
+        
+        .table-filter-bar .filter-search {
+            width: 100%;
+            margin: 0;
+        }
+        
+        .table-filter-bar .filter-select {
+            width: calc(100% - 30px);
+            margin: 0 15px 10px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="logs-wrapper">
+    <div class="logs-card">
+        <form action="{% url 'organization:export_pdf' report_type %}" method="get" class="app-filters">
+            <div class="filter-header" id="filterToggle">
+                <div class="filter-title">
+                    <i class="fa-solid fa-filter"></i>
+                    جستجو و خروجی PDF
+                </div>
+                <div class="filter-toggle-hint">
+                    <span class="toggle-text">برای باز/بسته کردن کلیک کنید</span>
+                    <i class="fa-solid fa-chevron-down filter-arrow" id="filterArrow"></i>
+                </div>
+            </div>
+            
+            <div class="filter-content" id="filterContent">
+                <div class="filter-section">
+                    {% for field in search_form %}
+                    <div class="filter-item">
+                        <label>
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <button type="submit" class="export-btn">
+                    <i class="fa-solid fa-cloud-arrow-down"></i>
+                    دانلود گزارش PDF
+                </button>
+            </div>
+    </form>
+
+        <!-- نوار فیلتر سریع - به عنوان المان مستقل -->
+            <div class="table-filter-bar">
+                <div class="filter-search-wrapper">
+                    <input type="text" class="filter-search" id="tableSearch" placeholder="جستجو...">
+                <i class="fa-solid fa-search filter-search-icon"></i>
+                </div>
+                <div class="filter-options">
+                <select class="filter-select" id="filterColumn">
+                    <option value="all">همه ستون‌ها</option>
+                    <option value="user">اعلام کننده</option>
+                    <option value="type">نوع خطا</option>
+                    <option value="description">توضیحات</option>
+                    <option value="corrective_actions">اقدامات اصلاحی</option>
+                    <option value="prevention_actions">اقدامات پیشگیری</option>
+                    <option value="created_date">تاریخ ثبت</option>
+                    <option value="effective">مؤثر بوده</option>
+                    </select>
+                    <div class="filter-chips-wrapper">
+                        <div class="filter-chips">
+                            <button class="filter-chip status-all active" data-status="all">
+                                <i class="fa-solid fa-list"></i>
+                                همه موارد
+                            </button>
+                            <button class="filter-chip status-approved" data-status="True">
+                                <i class="fa-solid fa-check"></i>
+                                مؤثر بوده
+                            </button>
+                            <button class="filter-chip status-rejected" data-status="False">
+                                <i class="fa-solid fa-xmark"></i>
+                                مؤثر نبوده
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        <!-- دکمه تغییر حالت نمایش برای موبایل -->
+        <div class="view-toggle">
+            <div class="view-toggle-buttons">
+                <button class="view-toggle-btn" id="cardViewBtn">
+                    <i class="fa-solid fa-grip"></i>
+                    نمایش کارتی
+                </button>
+                <button class="view-toggle-btn" id="tableViewBtn">
+                    <i class="fa-solid fa-table"></i>
+                    نمایش جدولی
+                </button>
+            </div>
+        </div>
+            
+        <!-- نمایش جدول -->
+        <div class="table-container">
+                <table class="app-table" id="dataTable">
+            <thead>
+                <tr>
+                    <th data-column="user">اعلام کننده</th>
+                    <th data-column="type">نوع خطا</th>
+                    <th data-column="description">توضیحات</th>
+                    <th data-column="corrective_actions">اقدامات اصلاحی</th>
+                    <th data-column="prevention_actions">اقدامات پیشگیری</th>
+                    <th data-column="created_date">تاریخ ثبت</th>
+                    <th data-column="effective">مؤثر بوده</th>
+                    <th>عملیات</th>
+                </tr>
+            </thead>
+                    <tbody id="tableContent">
+                <!-- ردیف‌های اسکلتون برای حالت بارگذاری -->
+                <tr class="skeleton-row">
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                </tr>
+                <tr class="skeleton-row">
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                </tr>
+                <tr class="skeleton-row">
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                </tr>
+                <tr class="skeleton-row">
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                </tr>
+                <tr class="skeleton-row">
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                    <td class="skeleton-cell"><div class="skeleton-loader"></div></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+        <!-- کانتینر کارت‌ها برای نمایش موبایل -->
+        <div class="cards-container" id="cardsContainer">
+            <!-- کارت‌های اسکلتون برای حالت بارگذاری -->
+            <div class="skeleton-card">
+                <div class="skeleton-card-header">
+                    <div class="skeleton-loader skeleton-card-title"></div>
+                    <div class="skeleton-loader skeleton-card-date"></div>
+        </div>
+                <div class="skeleton-card-content">
+                    <div class="skeleton-card-item">
+                        <div class="skeleton-loader skeleton-card-label"></div>
+                        <div class="skeleton-loader skeleton-card-value"></div>
+    </div>
+                    <div class="skeleton-card-item">
+                        <div class="skeleton-loader skeleton-card-label"></div>
+                        <div class="skeleton-loader skeleton-card-value"></div>
+</div>
+                    <div class="skeleton-card-item">
+                        <div class="skeleton-loader skeleton-card-label"></div>
+                        <div class="skeleton-loader skeleton-card-value"></div>
+                    </div>
+                    <div class="skeleton-card-item">
+                        <div class="skeleton-loader skeleton-card-label"></div>
+                        <div class="skeleton-loader skeleton-card-value"></div>
+                    </div>
+                </div>
+                <div class="skeleton-card-footer">
+                    <div class="skeleton-card-status">
+                        <div class="skeleton-loader skeleton-status"></div>
+                        <div class="skeleton-loader skeleton-status"></div>
+                    </div>
+                    <div class="skeleton-loader skeleton-card-action"></div>
+                </div>
+            </div>
+            
+            <div class="skeleton-card">
+                <div class="skeleton-card-header">
+                    <div class="skeleton-loader skeleton-card-title"></div>
+                    <div class="skeleton-loader skeleton-card-date"></div>
+                </div>
+                <div class="skeleton-card-content">
+                    <div class="skeleton-card-item">
+                        <div class="skeleton-loader skeleton-card-label"></div>
+                        <div class="skeleton-loader skeleton-card-value"></div>
+                    </div>
+                    <div class="skeleton-card-item">
+                        <div class="skeleton-loader skeleton-card-label"></div>
+                        <div class="skeleton-loader skeleton-card-value"></div>
+                    </div>
+                    <div class="skeleton-card-item">
+                        <div class="skeleton-loader skeleton-card-label"></div>
+                        <div class="skeleton-loader skeleton-card-value"></div>
+                    </div>
+                    <div class="skeleton-card-item">
+                        <div class="skeleton-loader skeleton-card-label"></div>
+                        <div class="skeleton-loader skeleton-card-value"></div>
+                    </div>
+                </div>
+                <div class="skeleton-card-footer">
+                    <div class="skeleton-card-status">
+                        <div class="skeleton-loader skeleton-status"></div>
+                        <div class="skeleton-loader skeleton-status"></div>
+                    </div>
+                    <div class="skeleton-loader skeleton-card-action"></div>
+                </div>
+            </div>
+        </div>
+            
+
+    </div>
+</div>
+    </div>
+
+{{ search_form.media }}
+{% endblock %}
+
+{% block domready %}
+<script src="{% static 'vendor/persian-date/js/persian-date.min.js' %}"></script>
+<script src="{% static 'vendor/persian-datepicker/js/persian-datepicker.min.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // متغیرهای اصلی
+        const table = document.getElementById('dataTable');
+        const tableContent = document.getElementById('tableContent');
+        const cardsContainer = document.getElementById('cardsContainer');
+        const searchInput = document.getElementById('tableSearch');
+        const filterColumn = document.getElementById('filterColumn');
+        const filterChips = document.querySelectorAll('.filter-chip');
+        let activeFilterStatus = 'all';
+        // کد برای بارگذاری موارد بیشتر
+const loading = document.getElementById('loading');
+
+// متغیرهای مورد نیاز
+    let page = 1;
+    let empty_page = false;
+    let block_request = false;
+    let lastScrollPosition = 0;
+    let scrollThreshold = 300;
+
+// تابع اصلی بارگذاری داده‌های بیشتر
+function loadMoreData() {
+    // بررسی وضعیت قبل از بارگذاری
+    if (block_request || empty_page) {
+        console.log('بارگذاری انجام نمی‌شود: ' + (block_request ? 'درخواست قبلی در جریان است' : 'به انتهای داده‌ها رسیده‌ایم'));
+        
+        // بازگرداندن دکمه به حالت عادی اگر در حال بارگذاری مانده است
+        const button = document.querySelector('.show-more-button');
+        if (button && button.disabled) {
+            if (empty_page) {
+                removeShowMoreButton();
+                showEndOfListMessage();
+            } else {
+                button.innerHTML = '<i class="fas fa-plus-circle"></i> بارگذاری موارد بیشتر';
+                button.style.opacity = '1';
+                button.disabled = false;
+            }
+        }
+        
+        return false;
+    }
+    
+    // قفل کردن برای جلوگیری از درخواست‌های همزمان
+            block_request = true;
+    
+    // نمایش لودینگ
+    if (loading) loading.style.display = 'flex';
+    
+    // محاسبه شماره صفحه بعدی
+    const nextPage = page + 1;
+    
+    // اضافه کردن تایم‌استمپ برای جلوگیری از کش
+    const timestamp = new Date().getTime();
+    
+    console.log(`🔄 بارگذاری صفحه ${nextPage}...`);
+    
+    // درخواست به سرور
+    fetch(`?page=${nextPage}&page_size=15&_=${timestamp}`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Cache-Control': 'no-cache'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`خطای HTTP: ${response.status}`);
+        }
+        return response.text();
+    })
+    .then(html => {
+        // مخفی کردن لودینگ
+        if (loading) loading.style.display = 'none';
+        
+        // بررسی پاسخ دریافتی
+        if (!html || html.trim() === '' || html.includes('اطلاعاتی موجود نیست')) {
+            console.log('🛑 انتهای لیست - داده دیگری وجود ندارد');
+                    empty_page = true;
+            removeShowMoreButton();
+            showEndOfListMessage();
+        } else {
+            // اضافه کردن داده‌های جدید به جدول
+            const beforeCount = tableContent.querySelectorAll('tr:not(.show-more-row)').length;
+            
+            // حذف دکمه نمایش بیشتر قبل از افزودن داده‌های جدید
+            removeShowMoreButton();
+            
+            // اضافه کردن داده‌های جدید
+            tableContent.insertAdjacentHTML('beforeend', html);
+            
+            // شمارش تعداد ردیف‌های جدید
+            const afterCount = tableContent.querySelectorAll('tr:not(.show-more-row)').length;
+            const addedCount = afterCount - beforeCount;
+            
+            console.log(`✅ ${addedCount} سطر جدید اضافه شد`);
+            
+            if (addedCount > 0) {
+                // بروزرسانی شماره صفحه
+                page = nextPage;
+                
+                // بازسازی کارت‌ها
+                renderDataCards();
+                applyTruncateToElements();
+                filterTable();
+                
+                // اضافه کردن دکمه نمایش بیشتر
+                addShowMoreButton();
+            } else {
+                console.log('هیچ سطر جدیدی اضافه نشد - به انتهای لیست رسیده‌ایم');
+                empty_page = true;
+                showEndOfListMessage();
+            }
+        }
+        
+        // آزاد کردن قفل
+                    block_request = false;
+    })
+    .catch(error => {
+        console.error('خطا در بارگذاری داده‌های بیشتر:', error);
+        if (loading) loading.style.display = 'none';
+        block_request = false;
+        
+        // بازگرداندن دکمه به حالت عادی در صورت خطا
+        const button = document.querySelector('.show-more-button');
+        if (button) {
+            button.innerHTML = '<i class="fas fa-plus-circle"></i> بارگذاری موارد بیشتر';
+            button.style.opacity = '1';
+            button.disabled = false;
+        } else {
+            // اضافه کردن دکمه تلاش مجدد
+            addRetryButton();
+        }
+    });
+    
+    return true;
+}
+
+// حذف دکمه نمایش بیشتر
+function removeShowMoreButton() {
+    // حذف از جدول
+    const showMoreRow = document.querySelector('.show-more-row');
+    if (showMoreRow) showMoreRow.remove();
+    
+    // حذف از نمای موبایل
+    const mobileShowMoreContainer = document.querySelector('.mobile-show-more-container');
+    if (mobileShowMoreContainer) mobileShowMoreContainer.remove();
+}
+
+// اضافه کردن دکمه نمایش بیشتر
+function addShowMoreButton() {
+    // حذف دکمه قبلی اگر وجود دارد
+    removeShowMoreButton();
+    
+    // ایجاد سطر جدید برای حالت جدولی
+    const showMoreRow = document.createElement('tr');
+    showMoreRow.className = 'show-more-row';
+    showMoreRow.innerHTML = `
+        <td colspan="10" style="text-align: center; padding: 15px;">
+            <button class="show-more-button btn-primary" style="
+                padding: 10px 22px;
+                background-color: var(--app-white);
+                color: var(--app-primary);
+                border: 1.5px solid var(--app-primary);
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                margin: 0 auto;
+                min-width: 180px;
+                height: 42px;
+                transition: all 0.2s ease;
+            "><i class="fas fa-plus-circle"></i> بارگذاری موارد بیشتر</button>
+        </td>
+    `;
+    
+    // اضافه کردن به انتهای جدول
+    tableContent.appendChild(showMoreRow);
+    
+    // اضافه کردن دکمه برای حالت موبایلی (کارت‌ها)
+    const mobileShowMoreContainer = document.createElement('div');
+    mobileShowMoreContainer.className = 'mobile-show-more-container';
+    mobileShowMoreContainer.style.cssText = `
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        padding: 15px 0;
+        margin-top: 10px;
+    `;
+    
+    mobileShowMoreContainer.innerHTML = `
+        <button class="show-more-button mobile-show-more-button btn-primary" style="
+            padding: 10px 22px;
+            background-color: var(--app-white);
+            color: var(--app-primary);
+            border: 1.5px solid var(--app-primary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 300px;
+            height: 42px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        "><i class="fas fa-plus-circle"></i> بارگذاری موارد بیشتر</button>
+    `;
+    
+    cardsContainer.appendChild(mobileShowMoreContainer);
+    
+    // اضافه کردن رویداد کلیک برای دکمه
+    const button = showMoreRow.querySelector('.show-more-button');
+    button.addEventListener('click', function() {
+        // تغییر ظاهر دکمه به حالت بارگذاری
+        const allButtons = document.querySelectorAll('.show-more-button');
+        allButtons.forEach(btn => {
+            btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> در حال بارگذاری...';
+            btn.style.opacity = '0.8';
+            btn.disabled = true;
+        });
+        
+        // فراخوانی تابع بارگذاری
+        loadMoreData();
+    });
+    
+    // اضافه کردن رویداد کلیک برای دکمه موبایل
+    const mobileButton = mobileShowMoreContainer.querySelector('.mobile-show-more-button');
+    mobileButton.addEventListener('click', function() {
+        // نمایش وضعیت در حال بارگذاری روی همه دکمه‌ها
+        const allButtons = document.querySelectorAll('.show-more-button');
+        allButtons.forEach(btn => {
+            btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> در حال بارگذاری...';
+            btn.style.opacity = '0.8';
+            btn.disabled = true;
+        });
+        
+        // فراخوانی تابع بارگذاری
+        loadMoreData();
+    });
+}
+
+// نمایش پیام پایان لیست
+function showEndOfListMessage() {
+    // حذف دکمه‌های نمایش بیشتر
+    removeShowMoreButton();
+    
+    // پیام برای حالت جدولی
+    const endRow = document.createElement('tr');
+    endRow.className = 'end-of-list-row';
+    endRow.innerHTML = `
+        <td colspan="10" style="text-align: center; padding: 20px; color: var(--app-text-light);">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-check-circle" style="font-size: 20px;"></i>
+            <div>همه موارد نمایش داده شده‌اند</div>
+            </div>
+        </td>
+    `;
+    tableContent.appendChild(endRow);
+    
+    // پیام برای حالت موبایلی
+    if (cardsContainer) {
+        // حذف پیام قبلی اگر وجود دارد
+        const existingEndMessage = cardsContainer.querySelector('.mobile-end-of-list');
+        if (existingEndMessage) existingEndMessage.remove();
+        
+        const mobileEndMessage = document.createElement('div');
+        mobileEndMessage.className = 'mobile-end-of-list';
+        mobileEndMessage.style.cssText = `
+            width: 100%;
+            text-align: center;
+            padding: 20px 0;
+            color: var(--app-text-light);
+            margin-top: 10px;
+        `;
+        mobileEndMessage.innerHTML = `
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-check-circle" style="font-size: 20px;"></i>
+                <div>همه موارد نمایش داده شده‌اند</div>
+            </div>
+        `;
+        cardsContainer.appendChild(mobileEndMessage);
+    }
+}
+
+// اضافه کردن دکمه تلاش مجدد
+function addRetryButton() {
+    const retryRow = document.createElement('tr');
+    retryRow.className = 'retry-row';
+    retryRow.innerHTML = `
+        <td colspan="10" style="text-align: center; padding: 15px;">
+            <button class="retry-button" style="
+                padding: 10px 20px;
+                background-color: var(--app-warning);
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 14px;
+            ">تلاش مجدد</button>
+        </td>
+    `;
+    
+    // اضافه کردن به انتهای جدول
+    tableContent.appendChild(retryRow);
+    
+    // اضافه کردن رویداد کلیک
+    const button = retryRow.querySelector('.retry-button');
+    button.addEventListener('click', function() {
+        retryRow.remove();
+        loadMoreData();
+    });
+}
+
+// اصلاح تابع loadInitialData 
+const originalLoadInitialData = loadInitialData;
+loadInitialData = function() {
+    // نمایش نشانگر بارگذاری
+    if (loading) loading.style.display = 'flex';
+    
+    fetch('?page=1&page_size=15', {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.text())
+    .then(data => {
+        if (loading) loading.style.display = 'none';
+        
+        if (data === '' || data.trim() === '' || data.includes('اطلاعاتی موجود نیست')) {
+            tableContent.innerHTML = `<tr><td colspan="10">
+                <div class="empty-message">
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-search" style="font-size: 24px; color: var(--app-text-light);"></i>
+                        <div>اطلاعاتی موجود نیست.</div>
+                    </div>
+                </div>
+            </td></tr>`;
+            cardsContainer.innerHTML = '';
+        } else {
+            // حذف اسکلتون‌ها
+            const skeletonRows = tableContent.querySelectorAll('.skeleton-row');
+            skeletonRows.forEach(row => row.remove());
+            
+            // جایگزینی با داده‌های واقعی در جدول
+            tableContent.innerHTML = data;
+            
+            // ساخت کارت‌ها برای نمایش موبایل
+            renderDataCards();
+            
+            // فعال کردن قابلیت نمایش/مخفی‌سازی توضیحات
+            setTimeout(() => {
+                setupDescriptionToggle();
+            }, 150);
+            
+            // اعمال کوتاه کردن متن‌های طولانی
+            setTimeout(applyTruncateToElements, 100);
+            
+            // بررسی تعداد ردیف‌های داده
+            setTimeout(() => {
+                const rowCount = tableContent.querySelectorAll('tr:not(.skeleton-row):not(.show-more-row):not(.end-of-list-row):not(.retry-row)').length;
+                
+                if (rowCount < 15) {
+                    // اگر تعداد ردیف‌ها کمتر از 15 باشد، به انتهای لیست رسیده‌ایم
+                    empty_page = true;
+                } else {
+                    // اضافه کردن دکمه نمایش بیشتر
+                    addShowMoreButton();
+                }
+            }, 300);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        if (loading) loading.style.display = 'none';
+        
+        tableContent.innerHTML = `<tr><td colspan="10">
+            <div class="empty-message">
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-triangle-exclamation" style="font-size: 24px; color: var(--app-red);"></i>
+                    <div>خطا در بارگذاری اطلاعات. لطفاً صفحه را بارگذاری مجدد کنید.</div>
+                </div>
+            </div>
+        </td></tr>`;
+    });
+};
+
+// غیرفعال کردن اسکرول بی‌نهایت فعلی
+window.onscroll = null;
+
+// بارگذاری مجدد داده‌ها با قابلیت جدید
+loadInitialData();
+        
+        // تابع کوتاه کردن متن‌های طولانی - بهبود یافته
+        function truncateText(element, maxLength) {
+            if (!element) return;
+            const text = element.textContent.trim();
+            if (text.length > maxLength) {
+                const truncated = text.substring(0, maxLength) + '...';
+                element.textContent = truncated;
+                // اضافه کردن title برای نمایش متن کامل هنگام هاور
+                element.setAttribute('title', text);
+                // اضافه کردن کلاس برای استایل
+                element.classList.add('truncated-text');
+            }
+        }
+        
+        // اعمال کوتاه‌سازی متن به تمام المان‌های متنی
+        function applyTruncateToElements() {
+            // اعمال در حالت جدول
+            const tableCells = document.querySelectorAll('.app-table tbody td:nth-child(1), .app-table tbody td:nth-child(2), .app-table tbody td:nth-child(3), .app-table tbody td:nth-child(4), .app-table tbody td:nth-child(5)');
+            tableCells.forEach(cell => {
+                truncateText(cell, 30);
+            });
+            
+            // اعمال در حالت کارت
+            const cardTitles = document.querySelectorAll('.card-title');
+            cardTitles.forEach(title => {
+                truncateText(title, 30);
+            });
+            
+            const cardValues = document.querySelectorAll('.card-value');
+            cardValues.forEach(value => {
+                truncateText(value, 20);
+            });
+            
+            const descriptionContents = document.querySelectorAll('.description-content');
+            descriptionContents.forEach(content => {
+                // برای محتوای توضیحات فقط title را تنظیم می‌کنیم بدون کوتاه کردن متن
+                // چون این کار توسط CSS انجام می‌شود
+                const text = content.textContent.trim();
+                if (text.length > 30) {
+                    content.setAttribute('title', text);
+                }
+            });
+        }
+        
+        // بارگذاری داده‌ها با AJAX
+        function loadInitialData() {
+            // اسکلتون‌ها از قبل در HTML قرار دارند
+            
+            // بارگذاری داده‌ها
+            fetch('?page=1', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.text())
+            .then(data => {
+                // جایگزینی اسکلتون‌ها با داده‌های واقعی
+                if (data === '' || data.includes('اطلاعاتی موجود نیست')) {
+                    tableContent.innerHTML = `<tr><td colspan="10">
+                        <div class="empty-message">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                                <i class="fa-solid fa-search" style="font-size: 24px; color: var(--app-text-light);"></i>
+                                <div>اطلاعاتی موجود نیست.</div>
+                            </div>
+                        </div>
+                    </td></tr>`;
+                    cardsContainer.innerHTML = '';
+            } else {
+                    // جایگزینی اسکلتون‌ها با داده‌های واقعی در جدول
+                    tableContent.innerHTML = data;
+                    
+                    // ساخت کارت‌ها برای نمایش موبایل
+                    renderDataCards();
+                    
+                    // فعال کردن قابلیت نمایش/مخفی‌سازی توضیحات با کلیک
+                    setTimeout(() => {
+                        setupDescriptionToggle();
+                    }, 150);
+                    
+                    // اعمال کوتاه کردن متن‌های طولانی
+                    setTimeout(applyTruncateToElements, 100);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                tableContent.innerHTML = `<tr><td colspan="10">
+                    <div class="empty-message">
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                            <i class="fa-solid fa-triangle-exclamation" style="font-size: 24px; color: var(--app-red);"></i>
+                            <div>خطا در بارگذاری اطلاعات. لطفاً صفحه را بارگذاری مجدد کنید.</div>
+                        </div>
+                    </div>
+                </td></tr>`;
+            });
+        }
+        
+        // فراخوانی تابع بارگذاری داده‌ها
+        loadInitialData();
+        
+        // کوتاه کردن متن‌های طولانی و اضافه کردن سه نقطه
+        function truncateText(element, maxLength) {
+            const text = element.textContent.trim();
+            if (text.length > maxLength) {
+                const truncated = text.substring(0, maxLength) + '...';
+                element.textContent = truncated;
+                // اضافه کردن title برای نمایش متن کامل هنگام هاور
+                element.setAttribute('title', text);
+                // اضافه کردن کلاس برای استایل
+                element.classList.add('truncated-text');
+            }
+        }
+        
+        // اعمال تابع کوتاه کردن متن به تمام سلول‌های مورد نظر
+        function applyTruncateToElements() {
+            // اعمال به سلول‌های جدول
+            const tableCells = document.querySelectorAll('.app-table tbody td:nth-child(1), .app-table tbody td:nth-child(2), .app-table tbody td:nth-child(4), .app-table tbody td:nth-child(5)');
+            tableCells.forEach(cell => {
+                truncateText(cell, 30);
+            });
+            
+            // اعمال به مقادیر در کارت‌ها
+            const cardValues = document.querySelectorAll('.card-value');
+            cardValues.forEach(value => {
+                truncateText(value, 30);
+            });
+        }
+        
+        // متغیرهای مربوط به تغییر حالت نمایش
+        const cardViewBtn = document.getElementById('cardViewBtn');
+        const tableViewBtn = document.getElementById('tableViewBtn');
+        const logsCard = document.querySelector('.logs-card');
+        
+        // بررسی وضعیت موبایل
+        const isMobile = window.innerWidth <= 768;
+        
+        // تنظیم حالت پیش‌فرض برای موبایل
+        if (isMobile) {
+            // بررسی ترجیح کاربر از localStorage
+            const viewMode = localStorage.getItem('viewMode') || 'card';
+            setViewMode(viewMode);
+        }
+        
+        // تابع برای تنظیم حالت نمایش
+        function setViewMode(mode) {
+            if (mode === 'card') {
+                logsCard.classList.remove('table-mode');
+                logsCard.classList.add('card-mode');
+                cardViewBtn.classList.add('active');
+                tableViewBtn.classList.remove('active');
+        } else {
+                logsCard.classList.remove('card-mode');
+                logsCard.classList.add('table-mode');
+                tableViewBtn.classList.add('active');
+                cardViewBtn.classList.remove('active');
+            }
+            
+            // ذخیره ترجیح کاربر
+            localStorage.setItem('viewMode', mode);
+        }
+        
+        // اضافه کردن عملکرد مرتب‌سازی جدول
+        // متغیرهای مورد نیاز برای مرتب‌سازی
+        // let sortColumn = null;
+        // let sortDirection = 'asc';
+        
+        // یافتن شماره ستون براساس نام ستون
+        function getColumnIndex(columnName) {
+            const headers = Array.from(table.querySelectorAll('th[data-column]'));
+            for (let i = 0; i < headers.length; i++) {
+                if (headers[i].getAttribute('data-column') === columnName) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+        
+        // اضافه کردن آیکون‌های مرتب‌سازی به هدرهای جدول
+        const tableHeaders = table.querySelectorAll('th[data-column]');
+        tableHeaders.forEach(header => {
+            // حذف آیکون مرتب‌سازی و رویداد کلیک
+            // کد مرتب‌سازی اینجا غیرفعال شده است
+        });
+        
+        // تابع مرتب‌سازی جدول - غیرفعال شده
+        function sortTable(column, direction) {
+            // این تابع غیرفعال شده است
+            return;
+        }
+
+        // تابع برای تبدیل تاریخ فارسی به timestamp
+        function parsePersianDate(persianDateStr) {
+            try {
+                // فرض می‌کنیم فرمت تاریخ به صورت YYYY/MM/DD - HH:MM است
+                const cleanStr = persianDateStr.replace(/\s+/g, ' ').trim();
+                const dateParts = cleanStr.split(' - ')[0].split('/');
+                
+                if (dateParts.length !== 3) return 0;
+                
+                // استفاده از کتابخانه persian-date برای تبدیل
+                return new persianDate([parseInt(dateParts[0]), parseInt(dateParts[1]), parseInt(dateParts[2])]).valueOf();
+            } catch (e) {
+                console.error('Error parsing date:', e);
+                return 0;
+            }
+        }
+
+        // ساخت کارت‌ها برای نمایش موبایل
+        function renderDataCards() {
+            const rows = table.querySelectorAll('tbody tr:not(.no-results-message):not(.skeleton-row)');
+            cardsContainer.innerHTML = '';
+            
+            if (rows.length === 0 || (rows.length === 1 && rows[0].querySelector('.empty-message'))) {
+                cardsContainer.innerHTML = `
+                    <div class="empty-card">
+                        <div class="empty-message">
+                            <i class="fa-solid fa-search"></i>
+                            <p>اطلاعاتی موجود نیست</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            rows.forEach(row => {
+                // دریافت اطلاعات از سلول‌های ردیف با استفاده از data-column
+                const user = row.querySelector('td[data-column="user"]')?.textContent.trim() || '';
+                const type = row.querySelector('td[data-column="type"]')?.textContent.trim() || '';
+                const description = row.querySelector('td[data-column="description"]')?.textContent.trim() || '';
+                const corrective = row.querySelector('td[data-column="corrective_actions"]')?.textContent.trim() || '';
+                const prevention = row.querySelector('td[data-column="prevention_actions"]')?.textContent.trim() || '';
+                const date = row.querySelector('td[data-column="created_date"]')?.textContent.trim() || '';
+                const effective = row.querySelector('td[data-column="effective"]')?.textContent.trim() || '';
+                // استخراج URL عملیات از سلول مربوطه
+                const actionLink = row.querySelector('td[data-column="action"] a.action-btn')?.getAttribute('href') || '/organization/problem_reports/';
+                
+                // ایجاد کارت
+                const card = document.createElement('div');
+                card.className = 'data-card';
+                // اضافه کردن کلاس بر اساس وضعیت effective
+                if (effective.includes('بله')) {
+                    card.classList.add('status-approved');
+                } else {
+                    card.classList.add('status-rejected');
+                }
+                
+                card.innerHTML = `
+                    <div class="card-header">
+                        <h3 class="card-title">${type}</h3>
+                        <span class="card-date">${date}</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-item">
+                            <span class="card-label">اعلام کننده:</span>
+                            <span class="card-value">${user}</span>
+                        </div>
+                    </div>
+                    <div class="card-description" title="برای مشاهده کامل کلیک کنید">
+                        <div class="description-title">توضیحات</div>
+                        <div class="description-content">${description || 'بدون توضیحات'}</div>
+                    </div>
+                    <div class="card-description" title="برای مشاهده کامل کلیک کنید">
+                        <div class="description-title">اقدامات اصلاحی</div>
+                        <div class="description-content">${corrective || 'بدون توضیحات'}</div>
+                    </div>
+                    <div class="card-description" title="برای مشاهده کامل کلیک کنید">
+                        <div class="description-title">اقدامات پیشگیری</div>
+                        <div class="description-content">${prevention || 'بدون توضیحات'}</div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="card-status">
+                            <span class="status-container ${effective.includes('بله') ? 'status-approved' : 'status-rejected'}">
+                                <i class="fa-solid ${effective.includes('بله') ? 'fa-check' : 'fa-xmark'}"></i>
+                                ${effective.includes('بله') ? 'بله' : 'خیر'}
+                            </span>
+                        </div>
+                        <a href="${actionLink}" class="card-action">
+                            <i class="fa-solid fa-eye"></i>
+                            مشاهده
+                        </a>
+                    </div>
+                `;
+                
+                cardsContainer.appendChild(card);
+                
+                // اعمال نمایش/عدم نمایش بر اساس فیلترهای فعلی
+                if (row.style.display === 'none') {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // اگر هیچ کارتی نمایش داده نشود، پیام خالی را نمایش بده
+            checkEmptyCards();
+            
+            // فعال کردن قابلیت نمایش/مخفی‌سازی توضیحات با کلیک
+            setupDescriptionToggle();
+        }
+        
+        // رویداد برای دکمه‌های تغییر حالت نمایش
+        cardViewBtn.addEventListener('click', function() {
+            setViewMode('card');
+        });
+        
+        tableViewBtn.addEventListener('click', function() {
+            setViewMode('table');
+        });
+        
+        // بررسی خالی بودن کارت‌ها
+        function checkEmptyCards() {
+            const visibleCards = cardsContainer.querySelectorAll('.data-card:not([style*="display: none"])');
+            let emptyMessage = cardsContainer.querySelector('.empty-message');
+            
+            if (visibleCards.length === 0) {
+                if (!emptyMessage) {
+                    emptyMessage = document.createElement('div');
+                    emptyMessage.className = 'empty-message';
+                    emptyMessage.innerHTML = `
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                            <i class="fa-solid fa-search" style="font-size: 24px; color: var(--app-text-light);"></i>
+                            <div>نتیجه‌ای برای جستجوی شما یافت نشد.</div>
+                        </div>
+                    `;
+                    cardsContainer.appendChild(emptyMessage);
+                }
+            } else if (emptyMessage) {
+                emptyMessage.remove();
+            }
+        }
+        
+        // اعمال تاریخ شمسی به ورودی‌های تاریخ
+        const dateInputs = document.querySelectorAll('input[type="date"]');
+        
+        dateInputs.forEach(input => {
+            // ایجاد کانتینر برای هر فیلد تاریخ
+            const parent = input.parentNode;
+            const container = document.createElement('div');
+            container.className = 'date-input-container';
+            
+            // جایگزینی ورودی با ورودی معمولی برای امکان استفاده از دیت‌پیکر
+            const newInput = document.createElement('input');
+            newInput.type = 'text';
+            newInput.className = input.className;
+            newInput.name = input.name;
+            newInput.placeholder = 'انتخاب تاریخ';
+            newInput.autocomplete = 'off';
+            newInput.dataset.dateField = true;
+            
+            // انتقال مقدار اصلی در صورت وجود
+            if (input.value) {
+                newInput.value = input.value;
+            }
+            
+            // جایگزینی المان‌ها
+            parent.replaceChild(container, input);
+            container.appendChild(newInput);
+        });
+        
+     
+        
+        // فیلتر جدول بر اساس متن جستجو و ستون انتخاب شده
+        function filterTable() {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            const columnFilter = filterColumn.value;
+            const rows = table.querySelectorAll('tbody tr:not(.skeleton-row)');
+            const cards = cardsContainer.querySelectorAll('.data-card');
+            
+            rows.forEach((row, index) => {
+                if (row.classList.contains('no-results-message')) return;
+                
+                let showRow = false;
+                
+                // بررسی فیلتر وضعیت
+                const effectiveCell = row.querySelector('td[data-column="effective"]');
+                
+                let statusMatch = activeFilterStatus === 'all';
+                
+                if (activeFilterStatus === 'True' && effectiveCell && effectiveCell.textContent.includes('بله')) {
+                    statusMatch = true;
+                } else if (activeFilterStatus === 'False' && effectiveCell && effectiveCell.textContent.includes('خیر')) {
+                    statusMatch = true;
+                }
+                
+                // بررسی فیلتر متن جستجو
+                if (searchTerm === '') {
+                    // اگر متن جستجو خالی است، فقط بر اساس فیلتر وضعیت نمایش بده
+                    showRow = statusMatch;
+                } else {
+                    // در غیر این صورت، هم فیلتر وضعیت و هم متن جستجو را اعمال کن
+                    const cells = row.querySelectorAll('td');
+                    cells.forEach(cell => {
+                        if (!showRow) { // فقط اگر هنوز مطابقتی پیدا نشده، بررسی کن
+                            const dataColumn = cell.getAttribute('data-column');
+                            const cellText = cell.textContent.trim().toLowerCase();
+                            
+                            if (columnFilter === 'all' || dataColumn === columnFilter) {
+                                if (cellText.includes(searchTerm)) {
+                                    showRow = true;
+                                }
+                            }
+                        }
+                    });
+                    
+                    // هر دو فیلتر باید پاس شوند
+                    showRow = showRow && statusMatch;
+                }
+                
+                // اعمال نمایش یا عدم نمایش به ردیف و کارت متناظر
+                row.style.display = showRow ? '' : 'none';
+                if (cards[index]) {
+                    cards[index].style.display = showRow ? '' : 'none';
+                }
+            });
+            
+            // بررسی وجود حداقل یک نتیجه
+            const visibleRows = table.querySelectorAll('tbody tr:not(.skeleton-row):not([style*="display: none"])');
+            let noResultsRow = table.querySelector('.no-results-message');
+            
+            if (visibleRows.length === 0) {
+                if (!noResultsRow) {
+                    noResultsRow = document.createElement('tr');
+                    noResultsRow.className = 'no-results-message';
+                    noResultsRow.innerHTML = `
+                        <td colspan="8">
+                            <div class="empty-message">
+                                <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                                    <i class="fa-solid fa-search" style="font-size: 24px; color: var(--app-text-light);"></i>
+                                    <div>نتیجه‌ای برای جستجوی شما یافت نشد.</div>
+                                </div>
+                            </div>
+                        </td>
+                    `;
+                    table.querySelector('tbody').appendChild(noResultsRow);
+                } else if (noResultsRow.style.display === 'none') {
+                    noResultsRow.style.display = '';
+                }
+            } else if (noResultsRow) {
+                noResultsRow.style.display = 'none';
+            }
+            
+            // بررسی وضعیت کارت‌ها
+            checkEmptyCards();
+        }
+        
+        // اضافه کردن پیام "نتیجه‌ای یافت نشد" اگر هیچ سطری نمایش داده نشود
+        function checkEmptyTable() {
+            const visibleRows = table.querySelectorAll('tbody tr:not(.skeleton-row):not([style*="display: none"])');
+            let emptyMessage = table.querySelector('.no-results-message');
+            
+            if (visibleRows.length === 0) {
+                if (!emptyMessage) {
+                    const tbody = table.querySelector('tbody');
+                    const tr = document.createElement('tr');
+                    tr.className = 'no-results-message';
+                    tr.innerHTML = `<td colspan="10" style="text-align: center; padding: 20px;">
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                            <i class="fa-solid fa-search" style="font-size: 24px; color: var(--app-text-light);"></i>
+                            <div>نتیجه‌ای برای جستجوی شما یافت نشد.</div>
+                        </div>
+                    </td>`;
+                    tbody.appendChild(tr);
+                }
+            } else if (emptyMessage) {
+                emptyMessage.remove();
+            }
+        }
+        
+        // یافتن شماره ستون براساس نام ستون
+        function getColumnIndex(columnName) {
+            const headers = Array.from(table.querySelectorAll('th[data-column]'));
+            for (let i = 0; i < headers.length; i++) {
+                if (headers[i].getAttribute('data-column') === columnName) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+        
+        // اعمال رویدادها
+        searchInput.addEventListener('input', filterTable);
+        filterColumn.addEventListener('change', filterTable);
+        
+        // رویداد برای فیلتر چیپ‌ها
+        filterChips.forEach(chip => {
+            chip.addEventListener('click', function() {
+                filterChips.forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                activeFilterStatus = this.getAttribute('data-status');
+                console.log('Active filter status:', activeFilterStatus);
+                filterTable();
+            });
+        });
+        
+        // رویداد کلیک روی دکمه پاک کردن جستجو
+        document.querySelector('.filter-search-icon').addEventListener('click', function() {
+            if (searchInput.value !== '') {
+                searchInput.value = '';
+                filterTable();
+            }
+        });
+        
+        // تابع برای کوتاه کردن متن‌های طولانی و اضافه کردن کلاس truncate-text
+        function truncateLongTexts() {
+            // اعمال برای ستون‌های متنی مانند نام کالا، برند، توضیحات، و غیره
+            const tableCells = document.querySelectorAll('.app-table tbody td:nth-child(1), .app-table tbody td:nth-child(2), .app-table tbody td:nth-child(4), .app-table tbody td:nth-child(5)');
+            
+            // بررسی اینکه آیا در حالت موبایل هستیم یا خیر
+            const isMobile = window.innerWidth <= 768;
+            
+            tableCells.forEach(cell => {
+                const content = cell.textContent.trim();
+                // اگر سلول قبلاً کلاس truncate-text ندارد و متن طولانی است
+                if (!cell.querySelector('.truncate-text') && content.length > 20) {
+                    const fullText = content;
+                    const truncateSpan = document.createElement('span');
+                    truncateSpan.className = 'truncate-text';
+                    // ذخیره متن کامل برای مرتب‌سازی
+                    truncateSpan.setAttribute('data-full-text', fullText);
+                    
+                    // اگر در حالت موبایل هستیم، متن را کوتاه می‌کنیم
+                    if (isMobile) {
+                        truncateSpan.textContent = fullText.length > 25 ? fullText.substring(0, 25) + '...' : fullText;
+                    } else {
+                        // در حالت عادی متن را کوتاه می‌کنیم
+                        truncateSpan.textContent = fullText.length > 20 ? fullText.substring(0, 20) + '...' : fullText;
+                    }
+                    
+                    // اضافه کردن title برای نمایش متن کامل هنگام هاور
+                    truncateSpan.setAttribute('title', fullText);
+                    
+                    // جایگزینی محتوای سلول با المان جدید
+                    cell.textContent = '';
+                    cell.appendChild(truncateSpan);
+                }
+            });
+            
+            // اگر در حالت موبایل هستیم، مطمئن شویم همه متن‌های truncate به صورت کوتاه شده نمایش داده شوند
+            if (isMobile) {
+                document.querySelectorAll('.truncate-text').forEach(el => {
+                    const fullText = el.getAttribute('data-full-text');
+                    if (fullText) {
+                        el.textContent = fullText.length > 25 ? fullText.substring(0, 25) + '...' : fullText;
+                        el.setAttribute('title', fullText);
+                    }
+                });
+            }
+            
+            // اعمال محدودیت کوتاه کردن متن برای مقادیر کارت‌ها
+            document.querySelectorAll('.card-value').forEach(el => {
+                const text = el.textContent.trim();
+                if (text.length > 25) {
+                    el.textContent = text.substring(0, 25) + '...';
+                    el.setAttribute('title', text);
+                }
+            });
+        }
+        
+        loadInitialData();
+        
+        // فعال کردن قابلیت نمایش/مخفی‌سازی توضیحات با کلیک
+        function setupDescriptionToggle() {
+            console.log('Setting up description toggle...');
+            const descriptions = document.querySelectorAll('.card-description');
+            console.log('Found ' + descriptions.length + ' description elements');
+            
+            descriptions.forEach(desc => {
+                // حذف event listener قبلی برای جلوگیری از تکرار
+                desc.removeEventListener('click', handleDescriptionClick);
+                // اضافه کردن event listener جدید
+                desc.addEventListener('click', handleDescriptionClick);
+                
+                // اضافه کردن style برای نشان دادن قابل کلیک بودن
+                desc.style.cursor = 'pointer';
+                if (desc.querySelector('.description-title')) {
+                    desc.querySelector('.description-title').style.cursor = 'pointer';
+                }
+                if (desc.querySelector('.description-content')) {
+                    desc.querySelector('.description-content').style.cursor = 'pointer';
+                }
+            });
+        }
+        
+        // تابع مدیریت کلیک روی توضیحات
+        function handleDescriptionClick(e) {
+            console.log('Description clicked!');
+            this.classList.toggle('expanded');
+            e.stopPropagation(); // جلوگیری از انتشار کلیک به المان‌های والد
+        }
+        
+        // فراخوانی اولیه برای المان‌هایی که احتمالاً از قبل در صفحه وجود دارند
+        setTimeout(setupDescriptionToggle, 500);
+
+        // مدیریت آکاردئون فیلتر پیشرفته
+        const filterToggle = document.getElementById('filterToggle');
+        const filterContent = document.getElementById('filterContent');
+        const filterArrow = document.getElementById('filterArrow');
+        
+        // بررسی وضعیت قبلی از localStorage
+        const filterOpen = localStorage.getItem('filterOpen') === 'true';
+        
+        // تنظیم حالت اولیه
+        if (filterOpen) {
+            filterContent.classList.add('open');
+            filterArrow.classList.add('open');
+        }
+        
+        filterToggle.addEventListener('click', function() {
+            filterContent.classList.toggle('open');
+            filterArrow.classList.toggle('open');
+            
+            // ذخیره وضعیت در localStorage
+            localStorage.setItem('filterOpen', filterContent.classList.contains('open'));
+        });
+        
+        // بهبود عملکرد date picker
+        function enhanceDatePickers() {
+            const dateInputs = document.querySelectorAll('input[data-date-field="true"]');
+            dateInputs.forEach(input => {
+                $(input).persianDatepicker({
+                    format: 'YYYY/MM/DD',
+                    autoClose: true,
+                    initialValueType: 'persian',
+                    toolbox: {
+                        calendarSwitch: {
+                            enabled: false
+                        },
+                        todayButton: {
+                            enabled: true,
+                            text: {
+                                fa: 'امروز'
+                            }
+                        },
+                        submitButton: {
+                            enabled: false
+                        }
+                    },
+                    onSelect: function() {
+                        input.dispatchEvent(new Event('change', { 'bubbles': true }));
+                    }
+                });
+            });
+        }
+        
+        // فراخوانی تابع بهبود date picker
+        enhanceDatePickers();
+        
+        // اضافه کردن آیکون‌های مرتب‌سازی به هدرهای جدول
+        if (table) {
+            const tableHeaders = table.querySelectorAll('th[data-column]');
+            tableHeaders.forEach(header => {
+                // حذف آیکون مرتب‌سازی و رویداد کلیک
+                // کد مرتب‌سازی اینجا غیرفعال شده است
+            });
+        }
+        
+        // تابع مرتب‌سازی جدول - غیرفعال شده
+        function sortTable(column, direction) {
+            // این تابع غیرفعال شده است
+            return;
+        }
+    });
+</script>
+<script src="{% static "js/search-form.js" %}"></script>
+{% endblock %}

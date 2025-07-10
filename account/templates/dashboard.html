@@ -1,0 +1,933 @@
+﻿{% extends "base.html" %}
+{% block include %}
+<style>
+    /* استایل‌های اختصاصی داشبورد */
+    .dashboard-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        max-width: 1400px;
+        margin: 0 auto;
+        margin-top: -10px;
+    }
+    
+    /* استایل نوار خوش‌آمدگویی */
+    .welcome-strip {
+        width: 100%;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        padding: 8px var(--spacing-md);
+        margin-bottom: var(--spacing-md);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow-sm);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .welcome-strip::before, .welcome-strip::after {
+        content: '';
+        position: absolute;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .welcome-strip::before {
+        top: -20px;
+        right: -20px;
+    }
+
+    .welcome-strip::after {
+        bottom: -20px;
+        left: -20px;
+    }
+
+    .welcome-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    .welcome-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0;
+        margin-left: 18px;
+    }
+
+    .welcome-subtitle {
+        font-size: 1.2rem;
+        margin: 0;
+        opacity: 0.9;
+    }
+    
+    /* آمار سریع - تمام عرض */
+    .quick-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--spacing-md);
+        width: 100%;
+    }
+    
+    .stat-card {
+        background-color: var(--bg-light);
+        border-radius: var(--border-radius);
+        padding: var(--spacing-md);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        box-shadow: var(--box-shadow-sm);
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        height: 110px;
+        text-decoration: none;
+        color: white;
+    }
+    
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 100%);
+        z-index: -1;
+        opacity: 0;
+        transition: var(--transition);
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--box-shadow);
+    }
+    
+    .stat-card:hover::before {
+        opacity: 1;
+    }
+    
+    /* رنگ‌های متنوع برای کارت‌های آمار */
+    .stat-card.vacation {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        color: white;
+    }
+    
+    .stat-card.buy {
+        background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+        color: white;
+    }
+    
+    .stat-card.stockroom {
+        background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+        color: white;
+    }
+    
+    .stat-card.problem {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+    }
+    
+    .stat-card.tasks {
+        background: linear-gradient(135deg, #4a69bd 0%, #3867d6 100%);
+        color: white;
+    }
+    
+    /* کاهش اندازه آیکون‌ها */
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background-color: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(5px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+    
+    .stat-icon::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 100%);
+        top: 0;
+        left: 0;
+    }
+    
+    .stat-icon i {
+        font-size: 26px;
+        color: white;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .stat-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-height: 48px;
+    }
+    
+    .stat-value {
+        font-size: var(--font-xl);
+        font-weight: 700;
+        color: white;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: inline-block;
+        line-height: 1.1;
+    }
+    
+    .stat-label {
+        font-size: var(--font-xs);
+        color: rgba(255, 255, 255, 0.85);
+        line-height: 1.2;
+        margin-bottom: 2px;
+    }
+    
+    /* استایل برای مخفی کردن بخش جزئیات در کارت درخواست جانشینی فقط در دسکتاپ */
+    @media (min-width: 769px) {
+        .alternative-details {
+            display: none !important;
+        }
+        
+        .stat-card.alternative {
+            min-height: 115px;
+        }
+        .stat-card.problem {
+            min-height: 115px;
+        }
+        .stat-card.tasks {
+            min-height: 115px;
+        }
+        /* استایل برای نمایش متن در یک سطر در کارت جانشینی */
+        .stat-card.alternative .stat-label {
+            white-space: nowrap;
+        }
+        
+        /* در حالت دسکتاپ، متن تمام کارت‌ها در یک سطر نمایش داده شود */
+        .stat-label {
+            white-space: nowrap;
+        }
+    }
+    
+    /* انیمیشن برای اعداد آمار */
+    .stat-value {
+        transition: transform 0.3s ease, color 0.3s ease;
+    }
+    
+    .stat-value.updated {
+        transform: scale(1.2);
+        color: #FFEB3B;
+    }
+    
+    /* بخش اقدامات سریع */
+    .quick-actions {
+        margin-bottom: var(--spacing-md);
+        margin-top: var(--spacing-lg);
+    }
+    
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-md);
+    }
+    
+    .section-title {
+        font-size: var(--font-xl);
+        font-weight: 600;
+        position: relative;
+        padding-right: 15px;
+    }
+    
+    .section-title::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+        width: 5px;
+        height: 20px;
+        background-color: var(--primary-color);
+        border-radius: 3px;
+    }
+    
+    /* کارت‌های داشبورد بهبود یافته */
+    .dashboard-cards {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: var(--spacing-md);
+    }
+    
+    .dashboard-card {
+        background-color: var(--bg-light);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow-sm);
+        padding: 24px 24px 32px;
+        transition: var(--transition);
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+        text-decoration: none;
+        color: var(--text-color);
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(0, 0, 0, 0.03);
+        min-height: 180px;
+    }
+    
+    .dashboard-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 4px;
+        height: 100%;
+        background-color: var(--primary-color);
+        opacity: 0;
+        transition: var(--transition);
+        z-index: 0;
+    }
+    
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 126, 70, 0.12);
+        border-color: rgba(0, 126, 70, 0.1);
+    }
+    
+    .dashboard-card:hover::before {
+        opacity: 1;
+    }
+    
+    .card-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(0, 126, 70, 0.08);
+        margin-bottom: var(--spacing-sm);
+        position: relative;
+        transition: var(--transition);
+        overflow: hidden;
+        z-index: 1;
+    }
+    
+    .card-icon::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, rgba(0, 126, 70, 0.05) 0%, rgba(0, 126, 70, 0.2) 100%);
+        z-index: 1;
+    }
+    
+    .dashboard-card:hover .card-icon {
+        background-color: var(--primary-color);
+        transform: scale(1.05);
+    }
+    
+    .card-icon i {
+        font-size: 30px;
+        color: var(--primary-color);
+        transition: var(--transition);
+        position: relative;
+        z-index: 2;
+    }
+    
+    .dashboard-card:hover .card-icon i {
+        color: white;
+        transform: scale(1.1);
+    }
+    
+    .card-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .card-title {
+        font-size: calc(var(--font-lg) + 2px);
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: var(--spacing-sm);
+        transition: var(--transition);
+    }
+    
+    .dashboard-card:hover .card-title {
+        color: var(--primary-color);
+    }
+    
+    .card-description {
+        color: var(--text-light);
+        font-size: var(--font-md);
+        margin-bottom: auto;
+        line-height: 1.3;
+    }
+    
+    /* استایل‌های جزئیات آمار */
+    .stat-details {
+        margin-top: var(--spacing-xs);
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+        padding-top: 4px;
+    }
+    
+    .stat-detail-item {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        line-height: 1.2;
+    }
+    
+    .detail-label {
+        opacity: 0.8;
+    }
+    
+    .detail-value {
+        font-weight: 700;
+        background-color: rgba(255, 255, 255, 0.2);
+        padding: 1px 6px;
+        border-radius: 10px;
+        min-width: 20px;
+        text-align: center;
+    }
+    
+    /* انیمیشن برای جزئیات آمار */
+    .detail-value {
+        transition: transform 0.3s ease, color 0.3s ease;
+    }
+    
+    .detail-value.updated {
+        transform: scale(1.2);
+        color: #FFEB3B;
+    }
+    
+    /* استایل خاص برای کارت گزارش خطا */
+    .stat-card.problem .stat-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        text-align: right;
+    }
+    
+    .stat-card.problem .stat-value {
+        font-size: var(--font-xl);
+        margin: 0 0 4px 0;
+    }
+    
+    .stat-card.problem .stat-label {
+        width: 100%;
+        text-align: right;
+    }
+    
+    @media (max-width: 1500px) {
+        .quick-stats {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        
+        .dashboard-cards {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+    
+    @media (max-width: 992px) {
+        .dashboard-cards {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        
+        .quick-stats {
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-sm);
+        }
+        
+        .stat-card {
+            padding: var(--spacing-sm);
+            height: auto;
+            min-height: 100px;
+        }
+        
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+        }
+        
+        .stat-icon i {
+            font-size: 22px;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .welcome-content {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .dashboard-cards {
+            grid-template-columns: 1fr;
+        }
+        
+        .quick-stats {
+            grid-template-columns: 1fr;
+            width: 100%;
+            max-width: unset;
+            margin: 0;
+        }
+        
+        .stat-card {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            height: auto;
+            min-height: 90px;
+            padding: var(--spacing-md) var(--spacing-lg);
+        }
+        
+        .stat-content {
+            display: flex;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            align-items: flex-start;
+            width: calc(100% - 60px); /* حساب کردن عرض بدون آیکون */
+            text-align: right;
+        }
+        
+        .stat-value {
+            font-size: var(--font-xl);
+            margin-left: 0;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: var(--font-xs);
+            width: 100%;
+            margin-top: 0;
+            text-align: right;
+            white-space: normal;
+        }
+        
+        .stat-details {
+            width: 100%;
+            margin-top: var(--spacing-xs);
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+            justify-content: flex-start;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            padding-top: 6px;
+        }
+        
+        .stat-detail-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+        
+        /* تنظیمات خاص برای کارت خطا در حالت موبایل */
+        .stat-card.problem .stat-content {
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: right;
+            width: calc(100% - 60px);
+        }
+        
+        .stat-card.problem .stat-value {
+            margin: 0 0 4px 0;
+        }
+        
+        .stat-card.problem .stat-label {
+            width: 100%;
+            text-align: right;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .welcome-title {
+            font-size: var(--font-lg);
+        }
+        
+        .welcome-subtitle {
+            font-size: var(--font-xs);
+        }
+        
+        .section-title {
+            font-size: var(--font-lg);
+        }
+        
+        .card-icon {
+            width: 55px;
+            height: 55px;
+        }
+        
+        .card-icon i {
+            font-size: 24px;
+        }
+        
+        .card-title {
+            font-size: var(--font-md);
+        }
+        
+        .card-description {
+            font-size: var(--font-sm);
+        }
+        
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .stat-icon i {
+            font-size: 20px;
+        }
+        
+        .stat-value {
+            font-size: var(--font-lg);
+        }
+        
+        .stat-card {
+            min-height: 80px;
+            padding: var(--spacing-sm) var(--spacing-md);
+        }
+    }
+    
+    @media (max-width: 400px) {
+        .stat-icon {
+            width: 36px;
+            height: 36px;
+        }
+        
+        .stat-icon i {
+            font-size: 18px;
+        }
+        
+        .stat-value {
+            font-size: var(--font-md);
+        }
+        
+        .stat-label {
+            font-size: 10px;
+        }
+        
+        .stat-card {
+            min-height: 70px;
+            padding: 8px 12px;
+            gap: 8px;
+        }
+        
+        .welcome-strip {
+            padding: var(--spacing-sm);
+        }
+        
+        .stat-details {
+            margin-top: 4px;
+            padding-top: 3px;
+        }
+        
+        .stat-detail-item {
+            font-size: 10px;
+        }
+        
+        .detail-value {
+            padding: 0 4px;
+            min-width: 16px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+    <!-- نوار خوش‌آمدگویی -->
+    <div class="welcome-strip">
+        <div class="welcome-content">
+            <h2 class="welcome-title">{{ request.user.first_name }} عزیز، خوش آمدید</h2>
+            <p class="welcome-subtitle">سیستم مدیریت اداری در خدمت شماست.</p>
+        </div>
+    </div>
+    
+    <!-- آمار سریع - تمام عرض صفحه -->
+    <div class="quick-stats">
+        {% if "organization.view_vacationrequest" in request.user.get_all_permissions %}
+        <a href="/vacation-request-logs" class="stat-card vacation">
+            <div class="stat-icon">
+                <i class="fa-solid fa-umbrella-beach"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value" data-stat="vacation">{{ vacation_requests_count }}</span>
+                <span class="stat-label">درخواست مرخصی بررسی نشده</span>
+                <div class="stat-details">
+                    <div class="stat-detail-item">
+                        <span class="detail-label">ساعتی:</span>
+                        <span class="detail-value" data-stat="vacation-hourly">{{ vacation_hourly_count }}</span>
+                    </div>
+                    <div class="stat-detail-item">
+                        <span class="detail-label">روزانه:</span>
+                        <span class="detail-value" data-stat="vacation-daily">{{ vacation_daily_count }}</span>
+                    </div>
+                </div>
+            </div>
+        </a>
+        {% endif %}
+        
+        {% if "shop.view_productbuyorder" in request.user.get_all_permissions %}
+        <a href="/product-buy-orders-logs" class="stat-card buy">
+            <div class="stat-icon">
+                <i class="fa-solid fa-basket-shopping"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value" data-stat="buy">{{ buy_orders_count }}</span>
+                <span class="stat-label">درخواست خرید بررسی نشده</span>
+                <div class="stat-details">
+                    <div class="stat-detail-item">
+                        <span class="detail-label">عادی:</span>
+                        <span class="detail-value" data-stat="buy-normal">{{ buy_normal_count }}</span>
+                    </div>
+                    <div class="stat-detail-item">
+                        <span class="detail-label">فوری:</span>
+                        <span class="detail-value" data-stat="buy-urgent">{{ buy_urgent_count }}</span>
+                    </div>
+                </div>
+            </div>
+        </a>
+        {% endif %}
+        
+        {% if "shop.view_productstockroomorder" in request.user.get_all_permissions %}
+        <a href="/product-from-stockroom-logs" class="stat-card stockroom">
+            <div class="stat-icon">
+                <i class="fa-solid fa-dolly"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value" data-stat="stockroom">{{ stockroom_orders_count }}</span>
+                <span class="stat-label">درخواست کالا از انبار بررسی نشده</span>
+                <div class="stat-details">
+                    <div class="stat-detail-item">
+                        <span class="detail-label">عادی:</span>
+                        <span class="detail-value" data-stat="stockroom-normal">{{ stockroom_normal_count }}</span>
+                    </div>
+                    <div class="stat-detail-item">
+                        <span class="detail-label">فوری:</span>
+                        <span class="detail-value" data-stat="stockroom-urgent">{{ stockroom_urgent_count }}</span>
+                    </div>
+                </div>
+            </div>
+        </a>
+        {% endif %}
+        
+        {% if "organization.view_problemreport" in request.user.get_all_permissions %}
+        <a href="/problem-report-logs" class="stat-card problem">
+            <div class="stat-icon">
+                <i class="fa-solid fa-circle-exclamation"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value" data-stat="problem">{{ problem_reports_count }}</span>
+                <span class="stat-label">مشکلات گزارش شده</span>
+            </div>
+        </a>
+        {% endif %}
+        
+        {% if "organization.add_vacationrequest" in request.user.get_all_permissions %}
+        <a href="/alternative-requests" class="stat-card alternative" style="background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); color: white;">
+            <div class="stat-icon">
+                <i class="fa-solid fa-people-arrows"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value" data-stat="alternative">{{ alternative_requests_count|default:0 }}</span>
+                <span class="stat-label">درخواست جانشینی بررسی نشده</span>
+                <div class="stat-details alternative-details" style="border-top: none;">
+                    <!-- فضای خالی برای حفظ ارتفاع یکسان با سایر کارت‌ها -->
+                </div>
+            </div>
+        </a>
+        {% endif %}
+        
+        {% if "organization.add_todolist" in request.user.get_all_permissions or "organization.add_taskassignment" in request.user.get_all_permissions %}
+        <a href="/open-tasks" class="stat-card tasks">
+            <div class="stat-icon">
+                <i class="fa-solid fa-tasks"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value" data-stat="open-tasks">{{ open_tasks_count|default:0 }}</span>
+                <span class="stat-label">تسک‌های انجام نشده تا امروز</span>
+                <div class="stat-details">
+                    <div class="stat-detail-item">
+                        <span class="detail-label">امروز:</span>
+                        <span class="detail-value" data-stat="tasks-today">{{ tasks_today_count|default:0 }}</span>
+                    </div>
+                    <div class="stat-detail-item">
+                        <span class="detail-label">روزهای قبل:</span>
+                        <span class="detail-value" data-stat="tasks-before">{{ tasks_before_today_count|default:0 }}</span>
+                    </div>
+                </div>
+            </div>
+        </a>
+        {% endif %}
+        
+    </div>
+    
+    <!-- بخش اقدامات سریع -->
+    <div class="quick-actions">
+        <div class="section-header">
+            <h3 class="section-title">درخواست‌ها</h3>
+        </div>
+        
+        <div class="dashboard-cards">
+            
+            {% if "organization.add_vacationrequest" in request.user.get_all_permissions %}
+            <a href="/vacation-request" class="dashboard-card">
+                <div class="card-icon">
+                    <i class="fa-solid fa-plane-departure"></i>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">درخواست مرخصی</h3>
+                    <p class="card-description">ثبت درخواست مرخصی</p>
+                </div>
+            </a>
+            {% endif %}
+            
+            {% if "shop.add_productstockroomorder" in request.user.get_all_permissions %}
+            <a href="/product-from-stockroom" class="dashboard-card">
+                <div class="card-icon">
+                    <i class="fa-solid fa-warehouse"></i>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">درخواست کالا از انبار</h3>
+                    <p class="card-description">برداشت کالا از انبار</p>
+                </div>
+            </a>
+            {% endif %}
+            
+            {% if "shop.add_productbuyorder" in request.user.get_all_permissions %}
+            <a href="/product-buy-order" class="dashboard-card">
+                <div class="card-icon">
+                    <i class="fa-solid fa-credit-card"></i>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">درخواست خرید کالا</h3>
+                    <p class="card-description">ثبت سفارش خرید کالا</p>
+                </div>
+            </a>
+            {% endif %}
+            
+            {% if "organization.add_problemreport" in request.user.get_all_permissions %}
+            <a href="/problem-report" class="dashboard-card">
+                <div class="card-icon">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">گزارش مشکلات</h3>
+                    <p class="card-description">اعلام مشکلات سیستم</p>
+                </div>
+            </a>
+            {% endif %}
+            
+            {% if "organization.add_todolist" in request.user.get_all_permissions %}
+            <a href="/new-task" class="dashboard-card">
+                <div class="card-icon">
+                    <i class="fa-solid fa-list-check"></i>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">تسک جدید</h3>
+                    <p class="card-description">ایجاد وظیفه جدید</p>
+                </div>
+            </a>
+            {% endif %}
+            
+        </div>
+    </div>
+</div>
+
+<!-- اسکریپت‌های داشبورد -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // بروزرسانی خودکار آمار هر ۳۰ ثانیه
+        function updateStats() {
+            fetch('/dashboard-stats/', {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // بروزرسانی آمارهای اصلی با انیمیشن
+                updateStatWithAnimation('vacation', data.vacation_requests_count);
+                updateStatWithAnimation('buy', data.buy_orders_count);
+                updateStatWithAnimation('stockroom', data.stockroom_orders_count);
+                updateStatWithAnimation('problem', data.problem_reports_count);
+                updateStatWithAnimation('alternative', data.alternative_requests_count);
+                updateStatWithAnimation('open-tasks', data.open_tasks_count);
+                updateStatWithAnimation('tasks-today', data.tasks_today_count);
+                updateStatWithAnimation('tasks-before', data.tasks_before_today_count);
+                
+                // بروزرسانی جزئیات آمار مرخصی
+                updateStatWithAnimation('vacation-hourly', data.vacation_hourly_count);
+                updateStatWithAnimation('vacation-daily', data.vacation_daily_count);
+                
+                // بروزرسانی جزئیات آمار خرید
+                updateStatWithAnimation('buy-normal', data.buy_normal_count);
+                updateStatWithAnimation('buy-urgent', data.buy_urgent_count);
+                
+                // بروزرسانی جزئیات آمار انبار
+                updateStatWithAnimation('stockroom-normal', data.stockroom_normal_count);
+                updateStatWithAnimation('stockroom-urgent', data.stockroom_urgent_count);
+            })
+            .catch(error => {
+                console.error('Error fetching stats:', error);
+            });
+        }
+        
+        // تابع بروزرسانی آمار با انیمیشن
+        function updateStatWithAnimation(statName, newValue) {
+            const statElement = document.querySelector(`[data-stat="${statName}"]`);
+            if (!statElement) return;
+            
+            // اطمینان از اینکه مقدار صفر یا خالی باعث عدم نمایش نمی‌شود
+            newValue = newValue || 0;
+            
+            const currentValue = parseInt(statElement.textContent || '0');
+            
+            // اگر مقدار تغییر کرده باشد، انیمیشن را اجرا کن
+            if (currentValue !== newValue) {
+                // ابتدا کلاس انیمیشن را اضافه می‌کنیم
+                statElement.classList.add('updated');
+                
+                // بعد از مدت کوتاهی مقدار را تغییر می‌دهیم
+                setTimeout(() => {
+                    statElement.textContent = newValue;
+                    
+                    // پس از اتمام انیمیشن، کلاس را حذف می‌کنیم
+                    setTimeout(() => {
+                        statElement.classList.remove('updated');
+                    }, 500);
+                }, 300);
+            }
+        }
+        
+        // اولین بروزرسانی را پس از 10 ثانیه انجام می‌دهیم
+        setTimeout(updateStats, 10000);
+        
+        // سپس هر 30 ثانیه یکبار بروزرسانی می‌کنیم
+        setInterval(updateStats, 30000);
+    });
+</script>
+{% endblock %}

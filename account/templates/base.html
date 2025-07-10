@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#007E46">
+    <link rel="shortcut icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+    <link href="{% static "css/base.css" %}" rel="stylesheet">
+    <!-- حذف حاشیه آبی هنگام کلیک -->
+    <link href="{% static "css/remove-outline.css" %}" rel="stylesheet">
+    <!-- افکت‌های آیکون‌ها -->
+    <link href="{% static "css/icons-effects.css" %}" rel="stylesheet">
+    <!-- انیمیشن‌ها و افکت‌های حرکتی -->
+    <link href="{% static "css/animations.css" %}" rel="stylesheet">
+    <!-- Font Awesome (نسخه محلی) -->
+    <link rel="stylesheet" href="{% static 'vendor/fontawesome/fontawesome-free-6.5.1-web/css/all.min.css' %}">
+    <!-- تقویم شمسی جلالی -->
+    <link rel="stylesheet" href="{% static 'jalali_date_new/css/jalalidatepicker.min.css' %}">
+    <script src="{% static 'jalali_date_new/js/jalalidatepicker.min.js' %}"></script>
+    <style>
+      
+        /* استایل‌های اختصاصی برای دکمه منو در هدر */
+        @media (max-width: 768px) {
+            .menuIcon {
+                position: static;
+                width: 38px;
+                height: 38px;
+                margin-left: 10px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                opacity: 1;
+                visibility: visible;
+                background-color: var(--bg-light);
+                color: var(--text-color);
+                box-shadow: 0 0 8px rgba(0, 0, 0, 0.08);
+                transition: all 0.3s ease;
+                cursor: pointer;
+            }
+            
+            .menuIcon:hover {
+                background-color: var(--bg-color);
+                transform: translateY(-2px);
+            }
+            
+            #mobileMenuBars {
+                font-size: 18px;
+                display: block;
+                transition: transform 0.3s ease;
+            }
+            
+            #mobileMenuClose {
+                font-size: 18px;
+                display: none;
+                transition: transform 0.3s ease;
+            }
+            
+            .menuIcon.active {
+                background-color: var(--primary-color);
+                color: white;
+            }
+            
+            .menuIcon.active #mobileMenuBars {
+                display: none;
+            }
+            
+            .menuIcon.active #mobileMenuClose {
+                display: block;
+            }
+            
+            .topbar-start {
+                display: flex;
+                align-items: center;
+                flex: 1;
+            }
+            
+            .page-title {
+                margin-right: 8px;
+                font-size: var(--font-md);
+                max-width: 60%;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .page-title {
+                font-size: var(--font-xs);
+                max-width: 70%;
+                line-height: 1.2;
+            }
+        }
+    </style>
+    {% block include %}
+    {% endblock %}
+    <title>{{ title }} | سامانه مدیریت اداری</title>
+</head>
+<body style="-webkit-tap-highlight-color: transparent;">
+    <div id="sideBar">
+        <div class="profile-section">
+            <div class="pName">{{ request.user.first_name }} {{ request.user.last_name }}</div>
+            <div class="user-role">
+                <span class="role-badge">{{ request.user.groups.first.name }}</span>
+            </div>
+        </div>
+
+        <div class="menu-section">
+            <!-- داشبورد - منوی ثابت -->
+            <div class="menu-items">
+                <a href="/dashboard" class="menuItem {% if title == 'داشبورد' %}mItemSelected{% endif %}">
+                    <i class="fa-solid fa-gauge-high"></i>
+                    <span>داشبورد</span>
+                </a>
+            </div>
+            
+            {% with permissions=request.user.get_all_permissions %}
+            
+            <!-- منوی اتوماسیون با زیرمنوها - آکاردئون -->
+            {% if "shop.view_productbuyorder" in permissions or "shop.view_productstockroomorder" in permissions or "organization.view_vacationrequest" in permissions or "organization.view_problemreport" in permissions or "organization.view_todolist" in permissions or "organization.add_taskassignment" in permissions %}
+            <div class="menu-accordion">
+                <div class="accordion-header">
+                    <div class="menuCat">
+                        <i class="fa-solid fa-gears accordion-icon"></i>
+                        <span>اتوماسیون</span>
+                        <i class="fa-solid fa-chevron-down accordion-arrow"></i>
+                    </div>
+                </div>
+                <div class="accordion-content">
+                    <div class="menu-items">
+                        {% if "organization.view_vacationrequest" in permissions %}
+                        <a href="/vacation-request-logs" class="menuItem {% if title == 'سوابق درخواست مرخصی' %}mItemSelected{% endif %}">
+                            <i class="fa-solid fa-umbrella-beach"></i>
+                            <span>سوابق درخواست مرخصی</span>
+                        </a>
+                        {% endif %}
+                        
+                        {% if "shop.view_productbuyorder" in permissions %}
+                        <a href="/product-buy-orders-logs" class="menuItem {% if title == 'سوابق درخواست خرید کالا' %}mItemSelected{% endif %}">
+                            <i class="fa-solid fa-basket-shopping"></i>
+                            <span>سوابق درخواست خرید کالا</span>
+                        </a>
+                        {% endif %}
+                        
+                        {% if "shop.view_productstockroomorder" in permissions %}
+                        <a href="/product-from-stockroom-logs" class="menuItem {% if title == 'سوابق درخواست کالا از انبار' %}mItemSelected{% endif %}">
+                            <i class="fa-solid fa-dolly"></i>
+                            <span>سوابق درخواست کالا از انبار</span>
+                        </a>
+                        {% endif %}
+                        
+                        {% if "organization.view_problemreport" in permissions %}
+                        <a href="/problem-report-logs" class="menuItem {% if title == 'سوابق ثبت خطا' %}mItemSelected{% endif %}">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <span>سوابق ثبت خطا</span>
+                        </a>
+                        {% endif %}
+
+                        {% if "organization.add_todolist" in permissions or "organization.add_taskassignment" in permissions %}
+                        <a href="/open-tasks" class="menuItem {% if title == 'تسک های جاری' %}mItemSelected{% endif %}">
+                            <i class="fa-solid fa-list-check"></i>
+                            <span>تسک‌های جاری من</span>
+                        </a>
+                        {% endif %}
+
+                        {% if "organization.view_todolist" in permissions %}
+                        <a href="/privileged-task-logs" class="menuItem {% if title == 'سوابق تسک ها' %}mItemSelected{% endif %}">
+                            <i class="fa-solid fa-list-check"></i>
+                            <span>سوابق تسک‌ها</span>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- منوی کارتابل شما با زیرمنوها - آکاردئون -->
+            <div class="menu-accordion">
+                <div class="accordion-header">
+                    <div class="menuCat">
+                        <i class="fa-solid fa-inbox accordion-icon"></i>
+                        <span>کارتابل شما</span>
+                        <i class="fa-solid fa-chevron-down accordion-arrow"></i>
+                    </div>
+                </div>
+                <div class="accordion-content">
+                    <div class="menu-items">
+                        {% if "organization.add_vacationrequest" in permissions %}
+                        <a href="/alternative-requests" class="menuItem {% if title == 'درخواست های جانشینی' %}mItemSelected{% endif %}">
+                            <i class="fa-solid fa-people-arrows"></i>
+                            <span>درخواست های جانشینی</span>
+                        </a>
+                        <a href="/vacation-requests" class="menuItem {% if title == 'وضعیت درخواست مرخصی' %}mItemSelected{% endif %}">
+                            <i class="fa-solid fa-plane-departure"></i>
+                            <span>وضعیت درخواست مرخصی</span>
+                        </a>
+                        {% endif %}
+                        
+                        {% if "shop.add_productbuyorder" in permissions %}
+                        <a href="/product-buy-orders" class="menuItem {% if title == 'وضعیت درخواست خرید کالا' %}mItemSelected{% endif %}">
+                            <i class="fa-solid fa-credit-card"></i>
+                            <span>وضعیت درخواست خرید کالا</span>
+                        </a>
+                        {% endif %}
+                        
+                        {% if "shop.add_productstockroomorder" in permissions %}
+                        <a href="/product-requests-stockroom" class="menuItem {% if title == 'وضعیت درخواست کالا از انبار' %}mItemSelected{% endif %}">
+                            <i class="fa-solid fa-warehouse"></i>
+                            <span>وضعیت درخواست کالا از انبار</span>
+                        </a>
+                        {% endif %}
+                        
+                        {% if "organization.add_problemreport" in permissions %}
+                        <a href="/problem-reports" class="menuItem {% if title == 'وضعیت ثبت خطا' %}mItemSelected{% endif %}">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span>وضعیت ثبت خطا</span>
+                        </a>
+                        {% endif %}
+
+                        {% if "organization.add_todolist" in permissions %}
+                        <a href="/task-logs" class="menuItem {% if title == 'تسک‌های ایجاد شده' %}mItemSelected{% endif %}">
+                            <i class="fa-solid fa-list-check"></i>
+                            <span>تسک‌های ایجاد شده</span>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endwith %}
+        </div>
+        
+        <div class="sidebar-footer">
+            <a href="/logout" class="logout-button">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                <span>خروج از حساب</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- دکمه برای مخفی کردن/نمایش سایدبار -->
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="تغییر حالت سایدبار">
+        <i class="fa-solid fa-bars" id="menuBars"></i>
+        <i class="fa-solid fa-xmark" id="menuClose"></i>
+    </button>
+
+    <div class="topbar">
+        <div class="topbar-start">
+            <button class="menuIcon" aria-label="منو">
+                <i class="fa-solid fa-bars" id="mobileMenuBars"></i>
+                <i class="fa-solid fa-xmark" id="mobileMenuClose"></i>
+            </button>
+            <h1 class="page-title">{{ title }}</h1>
+        </div>
+        <div class="topbar-actions">
+            <div class="date-display">
+                <i class="fa-regular fa-calendar-days"></i>
+                <span id="current-date"></span>
+            </div>
+            
+            {% include 'partials/telegram_chat_widget.html' %}
+            
+            <div class="user-profile-dropdown">
+                <button class="dropdown-toggle">
+                    <div class="user-avatar">{{ request.user.first_name|first }}</div>
+                    <span class="user-name">{{ request.user.first_name }}</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <div class="dropdown-user-info">
+                        <div class="dropdown-user-avatar">{{ request.user.first_name|first }}</div>
+                        <div class="dropdown-user-details">
+                            <div class="dropdown-user-name">{{ request.user.first_name }} {{ request.user.last_name }}</div>
+                            <div class="dropdown-user-role">{{ request.user.groups.first.name }}</div>
+                            <div class="dropdown-user-id">کد ملی: {{ request.user.id_number }}</div>
+                        </div>
+                    </div>
+                    <a href="/logout" class="dropdown-item logout-item">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <span>خروج از حساب</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="contentSection">
+        {% block content %}
+        {% endblock %}
+        <div class="popUpBg"></div>
+    </div>
+
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/js-cookie/js.cookie.min.js' %}"></script>
+    <script>
+        const csrftoken = Cookies.get('csrftoken');
+        function csrfSafeMethod(method) {
+          return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        $.ajaxSetup({
+          beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+              xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+          }
+        });
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // نمایش تاریخ فارسی با فرمت مناسب (عددی برای موبایل، متنی برای دسکتاپ)
+            const date = new Date();
+            const isMobile = window.innerWidth <= 768;
+            const options = isMobile 
+                ? { year: 'numeric', month: 'numeric', day: 'numeric' } 
+                : { year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('current-date').textContent = date.toLocaleDateString('fa-IR', options);
+            
+            // تغییر فرمت تاریخ در صورت تغییر سایز صفحه
+            window.addEventListener('resize', function() {
+                const date = new Date();
+                const isMobile = window.innerWidth <= 768;
+                const options = isMobile 
+                    ? { year: 'numeric', month: 'numeric', day: 'numeric' } 
+                    : { year: 'numeric', month: 'long', day: 'numeric' };
+                document.getElementById('current-date').textContent = date.toLocaleDateString('fa-IR', options);
+            });
+            
+            // مدیریت منوی موبایل
+            const menuIcon = document.querySelector('.menuIcon');
+            const sideBar = document.getElementById('sideBar');
+            const popUpBg = document.querySelector('.popUpBg');
+            const contentSection = document.getElementById('contentSection');
+            
+            // نمایش منو در حالت تبلت و موبایل
+            if (window.innerWidth <= 768) {
+                menuIcon.style.opacity = '1';
+                menuIcon.style.visibility = 'visible';
+            }
+            
+            // کلیک روی آیکون منو
+            menuIcon.addEventListener('click', function() {
+                // حذف کلاس collapsed اگر در حالت موبایل هستیم
+                if (window.innerWidth <= 768) {
+                    sideBar.classList.remove('collapsed');
+                }
+                
+                sideBar.classList.toggle('open');
+                this.classList.toggle('active');
+                popUpBg.classList.toggle('show');
+                if (sideBar.classList.contains('open')) {
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = '';
+                }
+            });
+            
+            // بستن منو با کلیک در پس‌زمینه تیره
+            popUpBg.addEventListener('click', function() {
+                sideBar.classList.remove('open');
+                menuIcon.classList.remove('active');
+                popUpBg.classList.remove('show');
+                document.body.style.overflow = '';
+            });
+            
+            // بستن منو در صورت تغییر اندازه صفحه
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    sideBar.classList.remove('open');
+                    menuIcon.classList.remove('active');
+                    popUpBg.classList.remove('show');
+                    document.body.style.overflow = '';
+                    menuIcon.style.opacity = '0';
+                    menuIcon.style.visibility = 'hidden';
+                    
+                    // بازگرداندن حالت collapsed اگر قبلاً ذخیره شده بود
+                    const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                    if (sidebarCollapsed) {
+                        sideBar.classList.add('collapsed');
+                        sidebarToggle.classList.add('collapsed');
+                        contentSection.classList.add('expanded');
+                        topbar.classList.add('expanded');
+                    }
+                } else {
+                    menuIcon.style.opacity = '1';
+                    menuIcon.style.visibility = 'visible';
+                    
+                    // حذف کلاس collapsed در حالت موبایل
+                    if (!sideBar.classList.contains('open')) {
+                        sideBar.classList.remove('collapsed');
+                    }
+                }
+            });
+            
+            // مدیریت مخفی کردن سایدبار در حالت دسکتاپ
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const topbar = document.querySelector('.topbar');
+            
+            // بررسی وضعیت قبلی سایدبار از localStorage
+            const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (sidebarCollapsed && window.innerWidth > 768) {
+                sideBar.classList.add('collapsed');
+                sidebarToggle.classList.add('collapsed');
+                contentSection.classList.add('expanded');
+                topbar.classList.add('expanded');
+            }
+            
+            // رویداد کلیک روی دکمه مخفی کردن سایدبار
+            sidebarToggle.addEventListener('click', function() {
+                sideBar.classList.toggle('collapsed');
+                this.classList.toggle('collapsed');
+                contentSection.classList.toggle('expanded');
+                topbar.classList.toggle('expanded');
+                
+                // ذخیره وضعیت در localStorage
+                localStorage.setItem('sidebarCollapsed', sideBar.classList.contains('collapsed'));
+            });
+            
+            // منوی کاربر در هدر
+            const userDropdownToggle = document.querySelector('.dropdown-toggle');
+            const userDropdownMenu = document.querySelector('.dropdown-menu');
+            
+            if (userDropdownToggle && userDropdownMenu) {
+                userDropdownToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    if (window.getComputedStyle(userDropdownMenu).display === 'block') {
+                        userDropdownMenu.style.display = 'none';
+                    } else {
+                        userDropdownMenu.style.display = 'block';
+                    }
+                });
+                
+                document.addEventListener('click', function(e) {
+                    if (!userDropdownToggle.contains(e.target) && !userDropdownMenu.contains(e.target)) {
+                        userDropdownMenu.style.display = 'none';
+                    }
+                });
+            }
+            
+            // عملکرد آکاردئون منوها
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+            
+            // تابع برای بررسی و بازکردن آکاردئون فعال
+            const openActiveAccordion = function() {
+                const activeMenuItem = document.querySelector('.mItemSelected');
+                if (activeMenuItem) {
+                    const accordion = activeMenuItem.closest('.accordion-content');
+                    if (accordion) {
+                        // اضافه کردن کلاس open برای نمایش بهتر
+                        accordion.classList.add('open');
+                        accordion.style.maxHeight = accordion.scrollHeight + 'px';
+                        
+                        // فعال کردن هدر آکاردئون
+                        const header = accordion.previousElementSibling;
+                        if (header) {
+                            header.classList.add('active');
+                            const arrow = header.querySelector('.accordion-arrow');
+                            if (arrow) {
+                                arrow.classList.add('open');
+                            }
+                        }
+                    }
+                }
+            };
+            
+            // اضافه کردن رویداد کلیک به هدر آکاردئون‌ها
+            accordionHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    const content = this.nextElementSibling;
+                    const arrow = this.querySelector('.accordion-arrow');
+                    
+                    // وضعیت را تغییر می‌دهیم
+                    this.classList.toggle('active');
+                    
+                    if (arrow) {
+                        arrow.classList.toggle('open');
+                    }
+                    
+                    // اگر باز است، ببندیم
+                    if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+                        content.style.maxHeight = '0px';
+                        content.classList.remove('open');
+                    } else {
+                        // اگر بسته است، باز کنیم
+                        content.classList.add('open');
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                    }
+                });
+            });
+            
+            // باز کردن آکاردئون فعال در هنگام بارگذاری صفحه
+            openActiveAccordion();
+        });
+    </script>
+    {% block domready %}
+    {% endblock %}
+    
+    <!-- <script>
+        // راه‌اندازی تقویم شمسی برای تمامی صفحات
+        if (typeof jalaliDatepicker !== 'undefined') {
+            jalaliDatepicker.startWatch({
+                separatorChar: "/",
+                minDate: "attr",
+                maxDate: "attr",
+                showTodayBtn: true,
+                autoHide: true
+            });
+        }
+    </script> -->
+</body>
+</html>

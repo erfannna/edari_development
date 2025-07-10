@@ -1,0 +1,57 @@
+/* 
+   فایل CSS برای تغییر همه فونت‌های Vazirmatn به IRANSansX 
+   این فایل باید در همه قالب‌ها اضافه شود
+*/
+
+/* اطمینان از استفاده از IRANSansX در کل body */
+body {
+    font-family: 'IRANSansX', sans-serif !important;
+}
+
+/* غیرفعال کردن همه اعلان‌های فونت Vazirmatn */
+@font-face {
+    font-family: 'Vazirmatn';
+    src: local('IRANSansX');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* جایگزینی فونت Vazirmatn با IRANSansX در همه عناصر */
+[style*="font-family: 'Vazirmatn'"],
+[style*='font-family: "Vazirmatn"'],
+[style*="font-family:Vazirmatn"],
+[style*="font-family: Vazirmatn"] {
+    font-family: 'IRANSansX', sans-serif !important;
+}
+
+/* اطمینان از استفاده از IRANSansX در همه عناصر متنی */
+h1, h2, h3, h4, h5, h6, p, a, span, div, button, input, select, textarea, label, li, td, th {
+    font-family: 'IRANSansX', sans-serif !important;
+}
+
+/* استثنا برای کلاس‌های Font Awesome */
+.fa,
+.fa-solid,
+.fas,
+.fa-regular,
+.far,
+.fa-brands,
+.fab {
+    font-family: 'Font Awesome 6 Free' !important;
+}
+
+.fa-regular,
+.far {
+    font-weight: 400 !important;
+}
+
+.fa-solid,
+.fas {
+    font-weight: 900 !important;
+}
+
+.fa-brands,
+.fab {
+    font-family: 'Font Awesome 6 Brands' !important;
+    font-weight: 400 !important;
+} 

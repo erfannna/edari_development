@@ -1,0 +1,37 @@
+{% load to_jalali_datetime %}
+{% for assignment in tasks %}
+<tr class="task-row {% if assignment.status == 'رد شده' %}status-rejected{% elif assignment.status == 'تایید شده' %}status-approved{% endif %}">
+    <td data-column="creator">{{ assignment.task.created_by }}</td>
+    <td data-column="title">{{ assignment.task.title }}</td>
+    <td data-column="description">{% if assignment.task.description %}{{ assignment.task.description }}{% else %}<span class="text-muted">بدون توضیحات</span>{% endif %}</td>
+    <td data-column="created_at">{{ assignment.task.created_at|to_jalali:'%H:%M - %Y/%m/%d' }}</td>
+    <td data-column="reminder_date">{{ assignment.task.remind_at|to_jalali:'%H:%M - %Y/%m/%d' }}</td>
+    <td data-column="status">
+        {% if assignment.status %}
+        <span class="status-badge {% if assignment.status == 'رد شده' %}status-rejected{% elif assignment.status == 'تایید شده' %}status-approved{% else %}status-pending{% endif %}">
+            {{ assignment.status }}
+        </span>
+        {% else %}
+        <span class="status-badge status-pending">بررسی نشده</span>
+        {% endif %}
+    </td>
+    <td data-column="is_done">
+        {% if assignment.is_done %}
+        <span class="status-badge status-approved">انجام شده</span>
+        {% else %}
+        <span class="status-badge status-rejected">انجام نشده</span>
+        {% endif %}
+    </td>
+    <td data-column="action">
+        <a class="action-btn" href="{% url 'organization:task_review' assignment.id %}" title="بررسی تسک">
+            <i class="fa-solid fa-eye"></i>
+        </a>
+    </td>
+</tr>
+{% empty %}
+</table>
+<div class="empty-state">
+    <i class="fa-solid fa-clipboard-list empty-icon"></i>
+    <span class="empty-message">اطلاعاتی موجود نیست.</span>
+</div>
+{% endfor %}

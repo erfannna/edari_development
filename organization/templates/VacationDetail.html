@@ -1,0 +1,521 @@
+{% extends "base.html" %}
+{% load static %}
+{% load to_jalali_datetime %}
+{% block include %}
+<link href="{% static "css/forms.css" %}" rel="stylesheet">
+<link href="{% static "css/log-detail.css" %}" rel="stylesheet">
+<style>
+    /* استایل‌های اختصاصی صفحه جزئیات درخواست */
+    .detail-container {
+        padding: 20px;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    
+    .detail-card {
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        margin-bottom: 24px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .detail-header {
+        background-color: var(--primary-color);
+        padding: 16px 24px;
+        color: white;
+        display: flex;
+        align-items: center;
+    }
+    
+    .detail-header i {
+        font-size: 20px;
+        margin-left: 10px;
+    }
+    
+    .detail-header h2 {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    .detail-body {
+        padding: 24px;
+    }
+    
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    .detail-item {
+        position: relative;
+    }
+    
+    .detail-label {
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--text-color);
+        margin-bottom: 8px;
+        display: block;
+    }
+    
+    .detail-value {
+        background-color: #f5f7fa;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        color: var(--text-color);
+        border: 1px solid #e4e7ec;
+        min-height: 45px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .detail-message .detail-value {
+        white-space: pre-wrap;
+        line-height: 1.8;
+        align-items: flex-start;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-word;
+        max-height: none;
+        overflow-y: visible;
+        text-align: right;
+    }
+    
+    .detail-message {
+        grid-column: span 2;
+    }
+    
+    /* استایل برای توضیحات بلند */
+    .description-container {
+        position: relative;
+        max-height: 300px;
+        overflow-y: auto;
+        margin-bottom: 10px;
+        padding-right: 10px;
+        text-align: right;
+        padding: 10px 15px;
+        border-radius: 8px;
+        line-height: 1.7;
+        font-size: 14px;
+    }
+    
+    .detail-status {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        min-width: 85px;
+    }
+    
+    .status-pending {
+        background-color: #fff4dd;
+        color: #ff9a00;
+        border: 1px solid rgba(255, 154, 0, 0.2);
+    }
+    
+    .status-approved {
+        background-color: rgba(0, 180, 90, 0.1);
+        color: #00b45a;
+        border: 1px solid rgba(0, 180, 90, 0.2);
+    }
+    
+    .status-rejected {
+        background-color: rgba(239, 57, 78, 0.1);
+        color: var(--error-color);
+        border: 1px solid rgba(239, 57, 78, 0.2);
+    }
+    
+    .review-form {
+        background-color: #f9fafb;
+        border-radius: 12px;
+        border: 1px solid #e4e7ec;
+        padding: 24px;
+        margin-top: 24px;
+    }
+    
+    .review-form h3 {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: var(--text-color);
+    }
+    
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+    
+    .form-group {
+        flex: 1 1 100%;
+        margin-bottom: 16px;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 8px;
+        border: 1px solid #e4e7ec;
+        background-color: white;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(0, 126, 70, 0.1);
+    }
+    
+    .form-footer {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #e4e7ec;
+    }
+    
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        border: none;
+        gap: 8px;
+    }
+    
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+    }
+    
+    .btn-secondary {
+        background-color: #f0f0f1;
+        color: #424750;
+        margin-left: 10px;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #e4e4e6;
+    }
+    
+    .btn i {
+        font-size: 14px;
+    }
+    
+    .message {
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        position: relative;
+        padding-right: 35px;
+    }
+    
+    .message i {
+        position: absolute;
+        right: 12px;
+        top: 12px;
+        font-size: 16px;
+    }
+    
+    .message.info {
+        background-color: rgba(0, 126, 70, 0.05);
+        border: 1px solid rgba(0, 126, 70, 0.1);
+        color: var(--primary-color);
+    }
+    
+    .message.success {
+        background-color: rgba(54, 179, 126, 0.05);
+        border: 1px solid rgba(54, 179, 126, 0.1);
+        color: var(--success-color);
+    }
+    
+    .message.error {
+        background-color: rgba(255, 86, 48, 0.05);
+        border: 1px solid rgba(255, 86, 48, 0.1);
+        color: var(--error-color);
+    }
+    
+    /* استایل‌های دکمه نمایش بیشتر/کمتر توضیحات */
+    .btn-sm {
+        padding: 5px 10px;
+        font-size: 12px;
+        margin-top: 8px;
+    }
+    
+    .mt-2 {
+        margin-top: 10px;
+    }
+    
+    .expand-description {
+        display: inline-block;
+        color: var(--primary-color);
+        background-color: rgba(0, 126, 70, 0.05);
+        border: 1px solid rgba(0, 126, 70, 0.2);
+        border-radius: 20px;
+        padding: 5px 12px;
+        margin-top: 10px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: all 0.2s ease;
+        font-weight: 500;
+        box-shadow: 0 2px 5px rgba(0, 126, 70, 0.1);
+        text-align: center;
+    }
+    
+    .expand-description:hover {
+        background-color: rgba(0, 126, 70, 0.1);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 126, 70, 0.15);
+    }
+    
+    .expand-description.expanded {
+        background-color: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+    
+    /* Responsive styles */
+    @media (max-width: 768px) {
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .detail-message {
+            grid-column: span 1;
+        }
+        
+        .form-footer {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .btn {
+            width: 100%;
+        }
+        
+        .btn-secondary {
+            margin-left: 0;
+            order: 2;
+        }
+        
+        .description-container {
+            max-height: 200px; /* کوتاه‌تر در موبایل */
+        }
+    }
+    
+    /* استایل‌های اضافی برای نمایش بهتر در دستگاه‌های کوچک */
+    @media (max-width: 576px) {
+        .detail-body {
+            padding: 16px;
+        }
+        
+        .detail-grid {
+            gap: 15px;
+        }
+        
+        .detail-value {
+            padding: 10px 12px;
+            font-size: 13px;
+        }
+        
+        .description-container {
+            max-height: 150px;
+        }
+    }
+    
+    /* استایل‌های برای حالت افقی موبایل */
+    @media (max-width: 992px) and (orientation: landscape) {
+        .description-container {
+            max-height: 120px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <div class="detail-card">
+        <div class="detail-header">
+            <i class="fa-solid fa-calendar-check"></i>
+            <h2>اطلاعات درخواست</h2>
+        </div>
+        
+        <div class="detail-body">
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <span class="detail-label">نام متقاضی</span>
+                    <div class="detail-value">{{ instance.user }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label">نام جایگزین</span>
+                    <div class="detail-value">{{ instance.alternative }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label">تاریخ ثبت</span>
+                    <div class="detail-value">{{ instance.created|to_jalali:'%Y/%m/%d - %H:%M' }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label">نوع مرخصی</span>
+                    <div class="detail-value">{{ instance.type }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label">تاریخ شروع</span>
+                    <div class="detail-value">{{ instance.start_date|to_jalali:'%Y/%m/%d - %H:%M' }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label">تاریخ پایان</span>
+                    <div class="detail-value">{{ instance.end_date|to_jalali:'%Y/%m/%d - %H:%M' }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label">مدت</span>
+                    <div class="detail-value">{{ instance.duration }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label">وضعیت</span>
+                    {% if instance.status == "بررسی نشده" %}
+                        <span class="detail-status status-pending">{{ instance.status }}</span>
+                    {% elif instance.status == "موافقت شده" or instance.status == "تایید جانشین" %}
+                        <span class="detail-status status-approved">{{ instance.status }}</span>
+                    {% elif instance.status == "رد شده" or instance.status == "رد جانشین" %}
+                        <span class="detail-status status-rejected">{{ instance.status }}</span>
+                    {% else %}
+                        <span class="detail-status">{{ instance.status }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="detail-item detail-message">
+                    <span class="detail-label">توضیحات</span>
+                    <div class="detail-value">
+                        <div class="description-container">
+                            {% if instance.description %}{{ instance.description }}{% else %}بدون توضیحات{% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% with permissions=request.user.get_all_permissions %}
+    {% if "organization.change_vacationrequest" in permissions or instance.alternative == request.user %}
+    <div class="detail-card">
+        <div class="detail-header">
+            <i class="fa-solid fa-clipboard-check"></i>
+            <h2>بررسی درخواست</h2>
+        </div>
+        
+        <div class="detail-body">
+            {% if message %}
+            <div class="message {% if status %}{{ status }}{% else %}info{% endif %}">
+                <i class="fa-solid fa-info-circle"></i>
+                {{ message }}
+            </div>
+            {% endif %}
+            
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.status.id_for_label }}">{{ form.status.label }}</label>
+                        {{ form.status }}
+                    </div>
+                </div>
+                
+                <div class="form-footer">
+                    <button type="button" class="btn btn-secondary" onclick="window.history.back()">
+                        <i class="fa-solid fa-arrow-right"></i>
+                        بازگشت
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-check"></i>
+                        ثبت تغییرات
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+    {% endwith %}
+</div>
+{% endblock %}
+
+{% block domready %}
+<script>
+    // اضافه کردن کلاس‌های استایل به فیلدهای فرم
+    $(document).ready(function() {
+        $("select, input, textarea").addClass("form-control");
+        
+        // حذف فاصله‌های اضافی از ابتدا و انتهای متن توضیحات
+        const $descriptionContainer = $('.description-container');
+        let descriptionHTML = $descriptionContainer.html();
+        
+        if (descriptionHTML) {
+            // حذف فاصله‌های ابتدایی از متن HTML
+            descriptionHTML = descriptionHTML.replace(/^\s+/g, '');
+            $descriptionContainer.html(descriptionHTML);
+        }
+        
+        // ادامه کد قبلی...
+        const descriptionText = $descriptionContainer.text().trim();
+        
+        // اگر متن طولانی است، یک دکمه برای گسترش/جمع کردن اضافه کنیم
+        if (descriptionText.length > 300 || descriptionText.split('\n').length > 5) {
+            // اضافه کردن دکمه نمایش بیشتر/کمتر
+            const $expandBtn = $('<button type="button" class="expand-description">نمایش کامل</button>');
+            $descriptionContainer.parent().append($expandBtn);
+            
+            $expandBtn.on('click', function() {
+                if ($descriptionContainer.css('max-height') !== 'none') {
+                    // گسترش متن
+                    $descriptionContainer.css({
+                        'max-height': 'none',
+                        'overflow-y': 'visible'
+                    });
+                    $(this).text('نمایش کمتر');
+                    $(this).addClass('expanded');
+                } else {
+                    // جمع کردن متن
+                    $descriptionContainer.css({
+                        'max-height': '',
+                        'overflow-y': 'auto'
+                    });
+                    $(this).text('نمایش کامل');
+                    $(this).removeClass('expanded');
+                    
+                    // اسکرول به بالای توضیحات
+                    $('html, body').animate({
+                        scrollTop: $descriptionContainer.offset().top - 100
+                    }, 300);
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

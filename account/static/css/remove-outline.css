@@ -1,0 +1,81 @@
+/* حذف حاشیه آبی (outline) هنگام کلیک روی المان‌ها */
+
+/* حذف outline برای همه المان‌ها */
+*:focus,
+*:active,
+*:hover,
+*:visited,
+*:focus-visible,
+*:focus-within,
+*:target,
+*:-webkit-tap-highlight-color {
+    outline: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    -webkit-highlight: none !important;
+    -webkit-appearance: none !important;
+}
+
+/* اضافه کردن جایگزین برای outline جهت حفظ دسترس‌پذیری */
+a:focus,
+button:focus,
+input:focus,
+textarea:focus,
+select:focus,
+[role="button"]:focus,
+[tabindex]:focus {
+    box-shadow: 0 0 0 2px rgba(0, 126, 70, 0.25) !important; /* استفاده از رنگ اصلی سبز پروژه */
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+/* سفارشی‌سازی برای المان‌های خاص در صورت نیاز */
+.btn:focus,
+.menuItem:focus,
+.accordion-header:focus {
+    box-shadow: 0 0 0 2px rgba(0, 126, 70, 0.25) !important;
+    border-color: var(--primary-color) !important;
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+/* جایگزین برای المان‌هایی که تغییر رنگ پس‌زمینه برای آن‌ها بهتر است */
+.card:focus,
+.dropdown-toggle:focus {
+    background-color: rgba(0, 126, 70, 0.05) !important;
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+/* در صورتی که می‌خواهید برای المان‌های خاصی outline را نگه دارید */
+.keep-outline:focus {
+    outline: 2px solid var(--primary-color) !important;
+}
+
+/* حذف حاشیه آبی برای همه المان‌ها در موبایل */
+@media (max-width: 768px) {
+    * {
+        -webkit-tap-highlight-color: transparent !important;
+        outline: none !important;
+    }
+    
+    a, button, input, select, textarea, [role="button"], [tabindex] {
+        -webkit-tap-highlight-color: transparent !important;
+        -webkit-touch-callout: none !important;
+        -webkit-user-select: none !important;
+    }
+}
+
+/* حذف حاشیه آبی برای همه المان‌های a */
+a {
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    outline: none !important;
+}
+
+/* حذف حاشیه آبی برای همه دکمه‌ها */
+button {
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    outline: none !important;
+} 

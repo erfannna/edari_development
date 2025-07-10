@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="fa" dir="rtl">
+<head>
+
+
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#007E46">
+    <link rel="stylesheet" href="{% static "css/auth.css" %}">
+    <link rel="stylesheet" href="{% static "css/font-fix.css" %}">
+    <link rel="stylesheet" href="{% static "css/remove-outline.css" %}">
+    <link rel="stylesheet" href="{% static "vendor/flaticon/uicons-regular-rounded/css/uicons-regular-rounded.css" %}">
+    <link rel="stylesheet" href="{% static "vendor/flaticon/uicons-solid-rounded/css/uicons-solid-rounded.css" %}">
+    <title>ورود به سیستم مدیریت اداری</title>
+</head>
+<body>
+<div class="login-container">
+	<div class="login-box">
+		<div class="login-header">
+			<div class="logo-container">
+                <svg class="css-ze2te4 css-qd6ojx" viewBox="0 0 120.00000000000001 91.52082947343399"><g transform="translate(-5.16565037216227, -19.405109399743413) scale(0.2545533217662589)" class="css-frxyz3" fill="#007e46"><g xmlns="http://www.w3.org/2000/svg"><g><path d="M309.076,184.971c1.74-1.361,4.254-1.052,5.614,0.69c1.36,1.741,1.051,4.255-0.69,5.614l-42.721,33.362h18.129    l65.323-50.998c1.742-1.359,4.256-1.049,5.614,0.691c1.359,1.741,1.05,4.255-0.691,5.614l-57.246,44.692h27.826h47.062h107.462    V76.232H222.772v148.405h35.51L309.076,184.971z"></path><rect x="334.234" y="232.638" width="39.062" height="36.345"></rect><rect x="62.954" y="311.104" width="17.599" height="124.663"></rect><polygon points="377.296,276.982 330.234,276.982 108.779,276.982 42.063,276.982 20.293,276.982 20.293,303.104 58.954,303.104     84.553,303.104 427.446,303.104 453.045,303.104 491.707,303.104 491.707,276.982   "></polygon><rect x="431.446" y="311.104" width="17.599" height="124.663"></rect><path d="M104.779,254.501H78.27V126.504l35.39-22.017l9.284,19.846c-7.738,5.047-13.869,12.523-17.152,21.569    c-4.226,11.606-3.373,24.167,2.272,34.983l78.611-37.004c-4.976-11.187-14.145-20.021-25.082-23.994    c-4.814-1.753-9.825-2.642-14.896-2.642c-5.834,0-11.481,1.183-16.671,3.346l-11.03-23.576c-0.484-1.036-1.389-1.814-2.485-2.14    c-1.095-0.324-2.279-0.165-3.25,0.438l-41.103,25.57c-1.174,0.73-1.888,2.015-1.888,3.396v130.22H46.063v14.481h58.717V254.501z"></path></g></g></g></svg>
+			</div>
+			<h1>سامانه اداری</h1>
+			<p class="login-subtitle">لطفا کد ملی و رمز عبور خود را وارد کنید</p>
+		</div>
+		<div class="login-form-container">
+			{% if message %}
+			<div class="alert">{{ message }}</div>
+			{% endif %}
+			
+			<form class="login-form" method="post" id="login-form" novalidate>
+				<div class="form-group">
+					<div class="input-with-icon">
+						{{ form.id_number }}
+						<i class="fi fi-rr-id-card"></i>
+					</div>
+					<div class="error-message" id="id_number_error">کد ملی باید ۱۰ رقم باشد</div>
+				</div>
+				
+				<div class="form-group">
+					<div class="input-with-icon">
+						{{ form.password }}
+						<i class="fi fi-sr-lock"></i>
+					</div>
+					<div class="error-message" id="password_error">رمز عبور نمی‌تواند خالی باشد</div>
+				</div>
+				
+				{% csrf_token %}
+				<div class="button-container">
+					<button type="submit" class="login-button" id="login-button">
+						<span>ورود به سامانه</span>
+					</button>
+				</div>
+				
+				<input type="hidden" name="next" value="{{ next }}">
+			</form>
+			
+			<div class="login-footer">
+				تمامی حقوق این سامانه محفوظ است © ۱۴۰۴
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const loginForm = document.getElementById('login-form');
+        const loginButton = document.getElementById('login-button');
+        const loginButtonText = loginButton.querySelector('span');
+        const idNumberInput = document.getElementById('id_number');
+        const passwordInput = document.getElementById('password');
+        const loginBox = document.querySelector('.login-box');
+        
+        // این بخش برای تغییر آسان SVG لوگو در آینده است
+        const logoSvg = document.querySelector('.logo-container svg');
+        // می‌توانید در آینده از این متغیر برای تغییر SVG استفاده کنید
+        
+        if (idNumberInput) {
+            idNumberInput.placeholder = "کد ملی خود را وارد کنید";
+            idNumberInput.setAttribute('autocomplete', 'off');
+            idNumberInput.setAttribute('inputmode', 'numeric');
+            idNumberInput.setAttribute('maxlength', '10');
+        }
+        
+        if (passwordInput) {
+            passwordInput.placeholder = "رمز عبور خود را وارد کنید";
+            passwordInput.setAttribute('autocomplete', 'off');
+        }
+        
+        const existingAlert = document.querySelector('.alert');
+        if (existingAlert) {
+            loginBox.classList.add('has-error');
+        }
+        
+        function validateIdNumber(idNumber) {
+            return /^\d{10}$/.test(idNumber);
+        }
+        
+        function showError(inputElement, errorMessage) {
+            const formGroup = inputElement.closest('.form-group');
+            formGroup.classList.add('has-error');
+            inputElement.classList.add('is-invalid');
+            const errorElement = formGroup.querySelector('.error-message');
+            if (errorElement) {
+                errorElement.textContent = errorMessage;
+                errorElement.style.display = 'block';
+            }
+            loginBox.classList.add('has-error');
+        }
+        
+        function removeError(inputElement) {
+            const formGroup = inputElement.closest('.form-group');
+            formGroup.classList.remove('has-error');
+            inputElement.classList.remove('is-invalid');
+            const errorElement = formGroup.querySelector('.error-message');
+            if (errorElement) {
+                errorElement.style.display = 'none';
+            }
+            
+            const hasErrors = document.querySelectorAll('.form-group.has-error').length > 0 || document.querySelector('.alert');
+            if (!hasErrors) {
+                loginBox.classList.remove('has-error');
+            }
+        }
+        
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            let isValid = true;
+            
+            if (!validateIdNumber(idNumberInput.value.trim())) {
+                showError(idNumberInput, 'کد ملی باید ۱۰ رقم باشد');
+                isValid = false;
+            } else {
+                removeError(idNumberInput);
+            }
+            
+            if (passwordInput.value.trim() === '') {
+                showError(passwordInput, 'رمز عبور نمی‌تواند خالی باشد');
+                isValid = false;
+            } else {
+                removeError(passwordInput);
+            }
+            
+            if (isValid) {
+                loginButton.disabled = true;
+                loginButton.classList.add('button-loading');
+                loginButtonText.textContent = 'در حال ورود...';
+                
+                setTimeout(function() {
+                    loginForm.submit();
+                }, 100);
+            }
+        });
+        
+        idNumberInput.addEventListener('input', function() {
+            removeError(idNumberInput);
+            
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (this.value.length > 10) {
+                this.value = this.value.substring(0, 10);
+            }
+        });
+        
+        passwordInput.addEventListener('input', function() {
+            removeError(passwordInput);
+        });
+        
+        loginButton.addEventListener('click', function() {
+            if (loginButton.classList.contains('button-loading')) {
+                return;
+            }
+            
+            loginButton.classList.add('button-active');
+            setTimeout(function() {
+                loginButton.classList.remove('button-active');
+            }, 150);
+        });
+    });
+</script>
+</body>
+</html>

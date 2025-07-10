@@ -1,0 +1,795 @@
+{% extends "base.html" %}
+{% load static %}
+{% load to_jalali_datetime %}
+{% block include %}
+<link href="{% static "css/forms.css" %}" rel="stylesheet">
+<link href="{% static "css/log-detail.css" %}" rel="stylesheet">
+<style>
+    /* استایل‌های اختصاصی صفحه جزئیات تسک */
+    .detail-container {
+        padding: 20px;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    
+    .detail-card {
+        background-color: transparent;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        margin-bottom: 24px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .detail-header {
+        background-color: var(--primary-color);
+        padding: 16px 24px;
+        color: white;
+        display: flex;
+        align-items: center;
+    }
+    
+    .detail-header i {
+        font-size: 20px;
+        margin-left: 10px;
+    }
+    
+    .detail-header h2 {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    .detail-body {
+        padding: 24px;
+        background-color: white;
+    }
+    
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    .detail-item {
+        position: relative;
+    }
+    
+    .detail-label {
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--text-color);
+        margin-bottom: 8px;
+        display: block;
+    }
+    
+    .detail-value {
+        background-color: transparent;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        color: var(--text-color);
+        border: 1px solid #e4e7ec;
+        min-height: 45px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .detail-message .detail-value {
+        white-space: pre-wrap;
+        line-height: 1.8;
+        align-items: flex-start;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-word;
+        max-height: none;
+        overflow-y: visible;
+        text-align: right;
+    }
+    
+    .detail-message {
+        grid-column: span 2;
+    }
+    
+    /* استایل برای توضیحات بلند */
+    .description-container {
+        position: relative;
+        max-height: 250px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        margin: 0;
+        padding: 5px 8px;
+        text-align: right;
+        border-radius: 8px;
+        line-height: 1.5;
+        font-size: 14px;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(0, 126, 70, 0.3) #f5f7fa;
+    }
+    
+    /* حذف فضای خالی از بالا و پایین توضیحات */
+    .description-container p:first-child {
+        margin-top: 0;
+    }
+    
+    .description-container p:last-child {
+        margin-bottom: 0;
+    }
+    
+    /* اصلاح نحوه نمایش متن توضیحات */
+    .detail-value.description-container {
+        display: block;
+        white-space: pre-line;
+    }
+    
+    /* سفارشی کردن استایل اسکرولبار برای مرورگرهای کروم و سافاری */
+    .description-container::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .description-container::-webkit-scrollbar-track {
+        background: #f5f7fa;
+        border-radius: 8px;
+    }
+    
+    .description-container::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 126, 70, 0.3);
+        border-radius: 8px;
+    }
+    
+    .detail-status {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        min-width: 85px;
+    }
+    
+    .status-pending {
+        background-color: #fff4dd;
+        color: #ff9a00;
+        border: 1px solid rgba(255, 154, 0, 0.2);
+    }
+    
+    .status-done {
+        background-color: rgba(0, 180, 90, 0.1);
+        color: #00b45a;
+        border: 1px solid rgba(0, 180, 90, 0.2);
+    }
+    
+    .status-not-done {
+        background-color: rgba(239, 57, 78, 0.1);
+        color: var(--error-color);
+        border: 1px solid rgba(239, 57, 78, 0.2);
+    }
+    
+    .task-form {
+        background-color: #f9fafb;
+        border-radius: 12px;
+        border: 1px solid #e4e7ec;
+        padding: 24px;
+        margin-top: 24px;
+    }
+    
+    .task-form h3 {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: var(--text-color);
+    }
+    
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+    
+    .form-group {
+        flex: 1 1 100%;
+        margin-bottom: 16px;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 8px;
+        border: 1px solid #e4e7ec;
+        background-color: white;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(0, 126, 70, 0.1);
+    }
+    
+    .form-footer {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #e4e7ec;
+        gap: 10px;
+    }
+    
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        border: none;
+        gap: 8px;
+    }
+    
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+    }
+    
+    .btn-secondary {
+        background-color: #f0f0f1;
+        color: #424750;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #e4e4e6;
+    }
+    
+    .message {
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        position: relative;
+        padding-right: 35px;
+    }
+    
+    .message i {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 16px;
+    }
+    
+    .message-success {
+        background-color: rgba(0, 180, 90, 0.1);
+        color: #00b45a;
+        border-right: 3px solid #00b45a;
+    }
+    
+    .message-success i {
+        color: #00b45a;
+    }
+    
+    .message-error {
+        background-color: rgba(239, 57, 78, 0.1);
+        color: var(--error-color);
+        border-right: 3px solid var(--error-color);
+    }
+    
+    .message-error i {
+        color: var(--error-color);
+    }
+    
+    .assignees-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 6px;
+    }
+    
+    .assignee-tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 12px;
+        background-color: #f0f7ff;
+        border-radius: 20px;
+        font-size: 13px;
+        color: #0065d0;
+    }
+    
+    .assignee-tag i {
+        margin-left: 6px;
+        font-size: 12px;
+    }
+    
+    .notes-section {
+        background-color: #f9fafb;
+        border-radius: 12px;
+        border: 1px solid #e4e7ec;
+        padding: 20px;
+        margin-top: 24px;
+    }
+    
+    .notes-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 16px;
+        font-weight: 600;
+        font-size: 16px;
+        color: var(--text-color);
+    }
+    
+    .notes-header i {
+        margin-left: 8px;
+        color: var(--primary-color);
+    }
+    
+    .note-item {
+        background-color: white;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 12px;
+        border: 1px solid #e4e7ec;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+    }
+    
+    .note-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .note-user {
+        font-weight: 500;
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+    }
+    
+    .note-user i {
+        margin-left: 6px;
+        font-size: 12px;
+    }
+    
+    .note-date {
+        font-size: 12px;
+        color: #6c757d;
+    }
+    
+    .note-body {
+        font-size: 14px;
+        line-height: 1.6;
+        color: var(--text-color);
+        max-height: 300px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 5px;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(0, 126, 70, 0.3) #f5f7fa;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+    
+    .note-body::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .note-body::-webkit-scrollbar-track {
+        background: #f5f7fa;
+        border-radius: 8px;
+    }
+    
+    .note-body::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 126, 70, 0.3);
+        border-radius: 8px;
+    }
+    
+    .radio-group {
+        display: flex;
+        gap: 20px;
+        margin-top: 10px;
+    }
+    
+    .radio-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+    }
+    
+    .radio-item input[type="radio"] {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 18px;
+        height: 18px;
+        border: 2px solid #e4e7ec;
+        border-radius: 50%;
+        outline: none;
+        cursor: pointer;
+        position: relative;
+    }
+    
+    .radio-item input[type="radio"]:checked {
+        border-color: var(--primary-color);
+    }
+    
+    .radio-item input[type="radio"]:checked::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 10px;
+        height: 10px;
+        background-color: var(--primary-color);
+        border-radius: 50%;
+    }
+    
+    .radio-item label {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-color);
+        cursor: pointer;
+    }
+    
+    .radio-done input[type="radio"]:checked {
+        border-color: #00b45a;
+    }
+    
+    .radio-done input[type="radio"]:checked::before {
+        background-color: #00b45a;
+    }
+    
+    .radio-not-done input[type="radio"]:checked {
+        border-color: var(--error-color);
+    }
+    
+    .radio-not-done input[type="radio"]:checked::before {
+        background-color: var(--error-color);
+    }
+    
+    /* استایل‌های دکمه‌های رادیویی */
+    #is_done_yes:checked {
+        border-color: #00b45a;
+    }
+    
+    #is_done_yes:checked::before {
+        background-color: #00b45a;
+    }
+    
+    #is_done_no:checked {
+        border-color: var(--error-color);
+    }
+    
+    #is_done_no:checked::before {
+        background-color: var(--error-color);
+    }
+    
+    /* ریسپانسیو */
+    @media (max-width: 768px) {
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .detail-message {
+            grid-column: span 1;
+            width: 100%;
+            max-width: 100%;
+        }
+        
+        .description-wrapper {
+            width: 100%;
+            height: 150px;
+            max-width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+        }
+        
+        .description-text {
+            padding: 6px 8px;
+            font-size: 13px;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .form-footer {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .btn {
+            width: 100%;
+        }
+        
+        /* کوچکتر کردن فونت هدر یادداشت‌ها در موبایل */
+        .notes-header {
+            font-size: 14px;
+        }
+        
+        .note-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+        
+        .note-user {
+            font-size: 13px;
+        }
+        
+        .note-date {
+            font-size: 11px;
+        }
+    }
+    
+    /* استایل برای متن‌های بلند در یادداشت‌ها */
+    .expandable-text {
+        position: relative;
+        max-height: none;
+        overflow: visible;
+    }
+    
+    /* بازنویسی کامل استایل توضیحات */
+    .description-wrapper {
+        border: 1px solid #e4e7ec;
+        border-radius: 8px;
+        height: 200px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .description-text {
+        padding: 8px 10px;
+        font-size: 14px;
+        line-height: 1.5;
+        color: var(--text-color);
+        white-space: normal;
+        word-wrap: break-word;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        text-align: right;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .description-wrapper::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .description-wrapper::-webkit-scrollbar-track {
+        background: #f5f7fa;
+        border-radius: 8px;
+    }
+    
+    .description-wrapper::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 126, 70, 0.3);
+        border-radius: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <div class="detail-card">
+        <div class="detail-header">
+            <i class="fa-solid fa-clipboard-list"></i>
+            <h2>جزئیات تسک</h2>
+        </div>
+        
+        <div class="detail-body">
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="detail-label">ایجاد کننده</div>
+                    <div class="detail-value">{{ instance.task.created_by }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">موضوع تسک</div>
+                    <div class="detail-value">{{ instance.task.title }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">تاریخ ایجاد</div>
+                    <div class="detail-value">{{ instance.task.created_at|to_jalali:'%Y/%m/%d - %H:%M' }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">موعد انجام</div>
+                    <div class="detail-value">{{ instance.task.remind_at|to_jalali:'%Y/%m/%d - %H:%M' }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">انجام دهندگان</div>
+                    <div class="detail-value">
+                        <div class="assignees-list">
+                            <div class="assignee-tag">
+                                <i class="fa-solid fa-user"></i>
+                                {{ instance.user }}
+                            </div>
+                            {% for assignment in instance.task.taskassignment_set.all %}
+                                {% if assignment.user != instance.user %}
+                                <div class="assignee-tag">
+                                    <i class="fa-solid fa-user"></i>
+                                    {{ assignment.user }}
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">فایل راهنما</div>
+                    <div class="detail-value">
+                        {% if instance.task.guide_file %}
+                            <div class="file-preview">
+                                <i class="fa-solid fa-file-pdf"></i>
+                                <a href="{{ instance.task.guide_file.url }}" target="_blank" download>
+                                    دانلود فایل راهنما
+                                    <i class="fa-solid fa-download" style="margin-right: 5px; font-size: 14px;"></i>
+                                </a>
+                            </div>
+                        {% else %}
+                            <span class="text-muted">بدون فایل راهنما</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="detail-item detail-message">
+                    <div class="detail-label">توضیحات</div>
+                    <div class="description-wrapper">
+                        {% if instance.task.description %}
+                            <div class="description-text">{{ instance.task.description }}</div>
+                        {% else %}
+                            <span class="text-muted">بدون توضیحات</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notes-section">
+        <div class="notes-header">
+            <i class="fa-solid fa-clipboard-list"></i>
+            یادداشت‌ها
+        </div>
+        
+        {% for note in notes %}
+            <div class="note-item">
+                <div class="note-header">
+                    <div class="note-user">
+                        <i class="fa-solid fa-user"></i>
+                        {{ note.user }}{% if note.user == instance.task.created_by %} (ایجاد کننده){% endif %} | {{ note.user.groups.first.name }}
+                    </div>
+                    <div class="note-date">{{ note.created|to_jalali:'%Y/%m/%d - %H:%M' }}</div>
+                </div>
+                <div class="note-body">
+                    {{ note.text }}
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-muted" style="text-align: center; padding: 20px;">یادداشتی وجود ندارد.</p>
+        {% endfor %}
+    </div>
+    
+    {% with permissions=request.user.get_all_permissions %}
+    {% if can_edit %}
+        <div class="task-form">
+            {% if message %}
+                <div class="message {% if status == 'red' %}message-error{% elif status == 'green' %}message-success{% endif %}">
+                    <i class="fa-solid {% if status == 'red' %}fa-circle-exclamation{% elif status == 'green' %}fa-circle-check{% endif %}"></i>
+                    {{ message }}
+                </div>
+            {% endif %}
+            
+            <h3>بروزرسانی وضعیت تسک</h3>
+            
+            <form method="post" id="task-update-form">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="status">وضعیت تسک</label>
+                    <select name="status" id="status" class="form-control">
+                        {% for value, text in form.fields.status.choices %}
+                            <option value="{{ value }}" {% if value == form.initial.status %}selected{% endif %}>{{ text }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>وضعیت انجام:</label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" name="is_done_status" id="is_done_yes" value="yes" {% if form.initial.is_done %}checked{% endif %}>
+                            <label for="is_done_yes">انجام شده</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="is_done_status" id="is_done_no" value="no" {% if not form.initial.is_done %}checked{% endif %}>
+                            <label for="is_done_no">انجام نشده</label>
+                        </div>
+                    </div>
+                    <!-- فیلد پنهان برای ارسال مقدار is_done به سرور -->
+                    <input type="hidden" name="is_done" id="is_done" value="{{ form.initial.is_done|yesno:"true,false" }}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="text">یادداشت جدید:</label>
+                    <textarea name="text" id="text" class="form-control" style="min-height: 120px;"></textarea>
+                </div>
+                
+                <div class="form-footer">
+                    <button type="submit" class="btn btn-primary" id="submit-button">
+                        <i class="fa-solid fa-check"></i>
+                        اعمال تغییرات
+                    </button>
+                    <a href="/open-tasks" class="btn btn-secondary">
+                        <i class="fa-solid fa-arrow-right"></i>
+                        بازگشت
+                    </a>
+                </div>
+            </form>
+        </div>
+    {% endif %}
+    {% endwith %}
+</div>
+{% endblock %}
+
+{% block domready %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // اعمال استایل به عناصر select
+        const selectElements = document.querySelectorAll('select');
+        selectElements.forEach(select => {
+            select.classList.add('form-control');
+        });
+        
+        // اعمال استایل به textarea
+        const textareas = document.querySelectorAll('textarea');
+        textareas.forEach(textarea => {
+            textarea.classList.add('form-control');
+            textarea.style.minHeight = '120px';
+        });
+        
+        // اضافه کردن کلاس‌های استایل به دکمه‌های رادیویی
+        const radioButtons = document.querySelectorAll('input[type="radio"]');
+        radioButtons.forEach(radio => {
+            radio.parentElement.classList.add('radio-styled');
+        });
+        
+        // تنظیم مقدار فیلد پنهان is_done بر اساس انتخاب رادیو باتن‌ها
+        const isDoneYesRadio = document.getElementById('is_done_yes');
+        const isDoneNoRadio = document.getElementById('is_done_no');
+        const isDoneHiddenField = document.getElementById('is_done');
+        
+        // تنظیم مقدار اولیه
+        if (isDoneYesRadio && isDoneNoRadio && isDoneHiddenField) {
+            isDoneHiddenField.value = isDoneYesRadio.checked ? "true" : "false";
+            
+            // اضافه کردن event listener برای تغییر مقدار
+            isDoneYesRadio.addEventListener('change', function() {
+                if (this.checked) {
+                    isDoneHiddenField.value = "true";
+                }
+            });
+            
+            isDoneNoRadio.addEventListener('change', function() {
+                if (this.checked) {
+                    isDoneHiddenField.value = "false";
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

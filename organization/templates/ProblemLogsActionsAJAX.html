@@ -1,0 +1,22 @@
+{% load to_jalali_datetime %}
+{% for log in logs %}
+<tr>
+    <td data-column="user">{{ log.user }}</td>
+    <td data-column="type">{{ log.type }}</td>
+    <td data-column="description">{% if log.description %}{{ log.description }}{% else %}بدون توضیحات{% endif %}</td>
+    <td data-column="corrective_actions">{% if log.corrective_actions %}{{ log.corrective_actions }}{% else %}بدون توضیحات{% endif %}</td>
+    <td data-column="prevention_actions">{% if log.prevention_actions %}{{ log.prevention_actions }}{% else %}بدون توضیحات{% endif %}</td>
+    <td data-column="created_date">{{ log.created|to_jalali:'%Y/%m/%d - %H:%M' }}</td>
+    <td data-column="effective">
+        {% if log.effective == False %}
+            <span class="status-container status-rejected">خیر</span>
+        {% else %}
+            <span class="status-container status-approved">بله</span>
+        {% endif %}
+    </td>
+    <td data-column="action"><a class="action-btn" href="{% url 'organization:problem_reports' %}?id={{ log.id }}"><i class="fa-solid fa-eye"></i></a></td>
+</tr>
+{% empty %}
+</table>
+<span class="message">اطلاعاتی موجود نیست.</span>
+{% endfor %}

@@ -1,0 +1,74 @@
+{% load to_jalali_datetime %}
+{% for log in logs %}
+<div class="data-card 
+    {% if log.status == 'بررسی نشده' %}status-pending
+    {% elif log.status == 'موافقت شده' %}status-approved
+    {% elif log.status == 'رد شده' %}status-rejected
+    {% elif log.status == 'تایید جانشین' %}status-approved
+    {% elif log.status == 'رد جانشین' %}status-rejected
+    {% elif log.status == 'بررسی بیشتر' %}status-more-review
+    {% endif %}">
+    
+    <div class="card-header">
+        <div class="card-title">{{ log.type }}</div>
+        <div class="card-date">{{ log.created|to_jalali:'%Y/%m/%d' }}</div>
+    </div>
+    
+    <div class="card-content">
+        <div class="card-item">
+            <div class="card-label">جایگزین</div>
+            <div class="card-value">{{ log.alternative }}</div>
+        </div>
+        
+        <div class="card-item">
+            <div class="card-label">از تاریخ</div>
+            <div class="card-value">{{ log.start_date|to_jalali:'%Y/%m/%d - %H:%M' }}</div>
+        </div>
+        
+        <div class="card-item">
+            <div class="card-label">تا تاریخ</div>
+            <div class="card-value">{{ log.end_date|to_jalali:'%Y/%m/%d - %H:%M' }}</div>
+        </div>
+        
+        <div class="card-item">
+            <div class="card-label">مدت</div>
+            <div class="card-value">{{ log.duration }}</div>
+        </div>
+        
+        {% if log.description %}
+        <div class="card-description">{{ log.description }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="card-footer">
+        <div class="card-status">
+            {% if log.status == "بررسی نشده" %}
+                <span class="status-container status-pending">{{ log.status }}</span>
+            {% elif log.status == "موافقت شده" %}
+                <span class="status-container status-approved">{{ log.status }}</span>
+            {% elif log.status == "رد شده" %}
+                <span class="status-container status-rejected">{{ log.status }}</span>
+            {% elif log.status == "تایید جانشین" %}
+                <span class="status-container status-approved">{{ log.status }}</span>
+            {% elif log.status == "رد جانشین" %}
+                <span class="status-container status-rejected">{{ log.status }}</span>
+            {% elif log.status == "بررسی بیشتر" %}
+                <span class="status-container status-more-review">{{ log.status }}</span>
+            {% else %}
+                <span class="status-container">{{ log.status }}</span>
+            {% endif %}
+        </div>
+        
+        <a href="{{ log.get_absolute_url }}" class="card-action">
+            <i class="fa-solid fa-eye"></i>
+            مشاهده
+        </a>
+    </div>
+</div>
+{% empty %}
+<div class="empty-state">
+    <i class="fa-solid fa-calendar-xmark"></i>
+    <h3>درخواستی یافت نشد</h3>
+    <p>در حال حاضر هیچ درخواست مرخصی ثبت نشده است.</p>
+</div>
+{% endfor %} 

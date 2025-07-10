@@ -1,0 +1,20 @@
+{% load to_jalali_datetime %}
+{% for log in logs %}
+<tr class="data-row">
+    <td data-column="type">{{ log.type }}</td>
+    <td data-column="description" class="description multiline-text">{% if log.description %}{{ log.description }}{% else %}بدون توضیحات{% endif %}</td>
+    <td data-column="corrective_actions" class="multiline-text">{% if log.corrective_actions %}{{ log.corrective_actions }}{% else %}بدون توضیحات{% endif %}</td>
+    <td data-column="prevention_actions" class="multiline-text">{% if log.prevention_actions %}{{ log.prevention_actions }}{% else %}بدون توضیحات{% endif %}</td>
+    <td data-column="created_date">{{ log.created|to_jalali:'%Y/%m/%d - %H:%M' }}</td>
+    <td data-column="effective">
+        {% if log.effective == False %}
+            <span class="status-container status-rejected">خیر</span>
+        {% else %}
+            <span class="status-container status-approved">بله</span>
+        {% endif %}
+    </td>
+</tr>
+{% empty %}
+</table>
+
+{% endfor %}

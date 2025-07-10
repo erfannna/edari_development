@@ -1,0 +1,41 @@
+{% load to_jalali_datetime %}
+{% for log in logs %}
+<tr class="data-row">
+    <td data-column="alternative">{{ log.alternative }}</td>
+    <td data-column="type">{{ log.type }}</td>
+    <td data-column="start_date">{{ log.start_date|to_jalali:'%Y/%m/%d - %H:%M' }}</td>
+    <td data-column="end_date">{{ log.end_date|to_jalali:'%Y/%m/%d - %H:%M' }}</td>
+    <td data-column="duration">{{ log.duration }}</td>
+    <td data-column="description" class="description multiline-text">{% if log.description %}{{ log.description }}{% else %}بدون توضیحات{% endif %}</td>
+    <td data-column="created_date">{{ log.created|to_jalali:'%Y/%m/%d' }}</td>
+    <td data-column="status">
+        {% if log.status == "بررسی نشده" %}
+            <span class="status-container status-pending">{{ log.status }}</span>
+        {% elif log.status == "موافقت شده" %}
+            <span class="status-container status-approved">{{ log.status }}</span>
+        {% elif log.status == "رد شده" %}
+            <span class="status-container status-rejected">{{ log.status }}</span>
+        {% elif log.status == "تایید جانشین" %}
+            <span class="status-container status-approved">{{ log.status }}</span>
+        {% elif log.status == "رد جانشین" %}
+            <span class="status-container status-rejected">{{ log.status }}</span>
+        {% elif log.status == "بررسی بیشتر" %}
+            <span class="status-container status-more-review">{{ log.status }}</span>
+        {% else %}
+            <span class="status-container">{{ log.status }}</span>
+        {% endif %}
+    </td>
+</tr>
+{% empty %}
+<tr class="no-results-message">
+    <td colspan="8">
+        <div class="empty-message" style="text-align: center; padding: 30px;">
+            <i class="fa-solid fa-info-circle" style="font-size: 24px; color: var(--app-blue); margin-bottom: 10px;"></i>
+            <h3 style="font-size: 16px; color: var(--app-text); margin-bottom: 8px;">دیتایی در جدول وجود ندارد</h3>
+            <p style="color: var(--app-text-light); max-width: 400px; margin: 0 auto; font-size: 14px;">
+                در حال حاضر هیچ درخواست مرخصی برای نمایش وجود ندارد.
+            </p>
+        </div>
+    </td>
+</tr>
+{% endfor %}

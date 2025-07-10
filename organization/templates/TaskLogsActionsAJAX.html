@@ -1,0 +1,68 @@
+{% load to_jalali_datetime %}
+{% for log in tasks %}
+<tr class="task-row {% if log.status == 'رد شده' or log.status == 'رد جانشین' %}status-rejected{% elif log.status == 'موافقت شده' %}status-approved{% endif %}">
+    {% if request.path == "/organization/privileged-task-logs" or request.path == "/privileged-task-logs" %}
+    <td data-column="created_by">{{ log.created_by }}</td>
+    {% endif %}
+    <td data-column="title">{{ log.title }}</td>
+    <td data-column="description">{% if log.description %}{{ log.description }}{% else %}<span class="text-muted">بدون توضیحات</span>{% endif %}</td>
+    <td data-column="created_at">{{ log.created_at|to_jalali:'%H:%M - %Y/%m/%d' }}</td>
+    <td data-column="assigned_to">
+        {% with assigned_count=log.assigned_to.all|length %}
+        {% if assigned_count > 0 %}
+            {% with first_user=log.assigned_to.all.0 %}
+                <span class="assignee-tag">{{ first_user }}
+                {% if assigned_count > 1 %}
+                    <span class="assignee-count">+{{ assigned_count|add:"-1" }}</span>
+                {% endif %}
+                </span>
+            {% endwith %}
+        {% else %}
+            <span class="text-muted">تعیین نشده</span>
+        {% endif %}
+        {% endwith %}
+    </td>
+    {% if request.path == "/organization/privileged-task-logs" or request.path == "/privileged-task-logs" %}
+    <td data-column="action">
+        <a class="action-btn" href="{% url 'organization:creator_task_review' log.id %}" title="بررسی تسک">
+            <i class="fa-solid fa-eye"></i>
+        </a>
+    </td>
+    {% else %}
+    <td data-column="status">
+        {% with assignments=log.taskassignment_set.all %}
+        {% if assignments %}
+            {% with assignment=assignments.0 %}
+            <span class="status-badge {% if assignment.status == 'رد شده' %}status-rejected{% elif assignment.status == 'تایید شده' %}status-approved{% else %}status-pending{% endif %}">
+                {{ assignment.status }}
+            </span>
+            {% endwith %}
+        {% else %}
+            <span class="status-badge status-pending">بررسی نشده</span>
+        {% endif %}
+        {% endwith %}
+    </td>
+    <td data-column="is_done">
+        {% with assignments=log.taskassignment_set.all %}
+        {% if assignments %}
+            {% with assignment=assignments.0 %}
+            {% if assignment.is_done %}
+            <span class="status-badge status-approved">انجام شده</span>
+            {% else %}
+            <span class="status-badge status-rejected">انجام نشده</span>
+            {% endif %}
+            {% endwith %}
+        {% else %}
+            <span class="status-badge status-rejected">انجام نشده</span>
+        {% endif %}
+        {% endwith %}
+    </td>
+    {% endif %}
+</tr>
+{% empty %}
+</table>
+<div class="empty-state">
+    <i class="fa-solid fa-clipboard-list empty-icon"></i>
+    <span class="empty-message">اطلاعاتی موجود نیست.</span>
+</div>
+{% endfor %}

@@ -1,0 +1,370 @@
+/* استایل‌های جدول */
+:root {
+    --primary-color: #007E46;
+    --primary-light: #00a35c;
+    --primary-dark: #006638;
+    --secondary-color: #788497;
+    --accent-color: #59D8D8;
+    --success-color: #36B37E;
+    --warning-color: #FFAB00;
+    --error-color: #FF5630;
+    --text-color: #242a36;
+    --text-light: #6B778C;
+    --text-muted: #97A0AF;
+    --text-disabled: #A5ADBA;
+    --bg-color: #f5f6fa;
+    --bg-light: #FFFFFF;
+    --border-radius-xs: 4px;
+    --border-radius-sm: 8px;
+    --border-radius: 12px;
+    --border-radius-lg: 16px;
+    --box-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    --box-shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.12);
+    --box-shadow-hover: 0 8px 12px rgba(0, 126, 70, 0.15);
+    --transition: all 0.3s ease;
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: auto;
+    background-color: var(--bg-light);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin-bottom: 24px;
+    max-height: 70vh;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+table {
+    direction: rtl;
+    border-spacing: 0;
+    width: 100%;
+    min-width: 800px;
+    background-color: var(--bg-light);
+    border-collapse: collapse;
+}
+
+thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: var(--bg-color);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+th, td {
+    padding: 12px 16px;
+    text-align: right;
+    font-family: "IRANSansX", sans-serif;
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    position: relative;
+}
+
+th {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-color);
+    white-space: nowrap;
+}
+
+td {
+    font-size: 14px;
+    color: var(--text-color);
+}
+
+tbody tr {
+    transition: var(--transition);
+}
+
+tbody tr:hover {
+    background-color: rgba(0, 126, 70, 0.04);
+}
+
+/* фильтр и поиск */
+form {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+    background-color: var(--bg-light);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow-sm);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+form p {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    min-width: 200px;
+}
+
+form label {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--text-color);
+}
+
+form input, form select {
+    height: 40px;
+    padding: 0 12px;
+    border-radius: var(--border-radius-sm);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    font-family: "IRANSansX", sans-serif;
+    font-size: 14px;
+    transition: var(--transition);
+}
+
+form input:focus, form select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 126, 70, 0.15);
+}
+
+/* кнопки */
+.a-btn {
+    text-decoration: none;
+    color: var(--text-color);
+    transition: var(--transition);
+}
+
+.a-btn:hover {
+    color: var(--primary-color);
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--border-radius-sm);
+    background-color: rgba(0, 126, 70, 0.1);
+    color: var(--primary-color);
+    font-size: 16px;
+    cursor: pointer;
+    transition: var(--transition);
+    border: none;
+}
+
+.action-btn:hover {
+    background-color: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.action-btn.delete {
+    background-color: rgba(255, 86, 48, 0.1);
+    color: var(--error-color);
+}
+
+.action-btn.delete:hover {
+    background-color: var(--error-color);
+    color: white;
+}
+
+.action-btn.success {
+    background-color: rgba(54, 179, 126, 0.1);
+    color: var(--success-color);
+}
+
+.action-btn.success:hover {
+    background-color: var(--success-color);
+    color: white;
+}
+
+/* состояние заказа */
+.order-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-pending {
+    background-color: rgba(255, 171, 0, 0.1);
+    color: var(--warning-color);
+}
+
+.status-approved {
+    background-color: rgba(54, 179, 126, 0.1);
+    color: var(--success-color);
+}
+
+.status-rejected {
+    background-color: rgba(255, 86, 48, 0.1);
+    color: var(--error-color);
+}
+
+.order-completed {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    margin: auto;
+    cursor: pointer;
+    transition: var(--transition);
+    border-radius: var(--border-radius-sm);
+}
+
+.order-completed:hover {
+    transform: scale(1.1);
+}
+
+/* Сообщение */
+.message {
+    position: relative;
+    display: block;
+    padding: 16px;
+    border-radius: var(--border-radius-sm);
+    font-family: "IRANSansX", sans-serif;
+    font-size: 14px;
+    margin: 0 0 24px 0;
+    text-align: right;
+    direction: rtl;
+}
+
+.message.error {
+    background-color: rgba(255, 86, 48, 0.08);
+    color: var(--error-color);
+    border-right: 4px solid var(--error-color);
+}
+
+.message.success {
+    background-color: rgba(54, 179, 126, 0.08);
+    color: var(--success-color);
+    border-right: 4px solid var(--success-color);
+}
+
+.message.warning {
+    background-color: rgba(255, 171, 0, 0.08);
+    color: var(--warning-color);
+    border-right: 4px solid var(--warning-color);
+}
+
+.message.info {
+    background-color: rgba(43, 74, 205, 0.08);
+    color: var(--primary-color);
+    border-right: 4px solid var(--primary-color);
+}
+
+/* Tooltip */
+.tooltip {
+    visibility: hidden;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 8px;
+    padding: 6px 10px;
+    background-color: rgba(0, 0, 0, 0.75);
+    color: white;
+    font-size: 12px;
+    font-weight: 400;
+    border-radius: var(--border-radius-xs);
+    white-space: nowrap;
+    z-index: 100;
+    text-align: center;
+}
+
+.tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.75) transparent transparent transparent;
+}
+
+.action-btn:hover .tooltip {
+    visibility: visible;
+}
+
+/* Загрузка */
+.custom-loader {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 3px solid rgba(43, 74, 205, 0.1);
+    border-top-color: var(--primary-color);
+    animation: loader-spin 1s infinite linear;
+    display: none;
+}
+
+@keyframes loader-spin {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* Адаптивные стили */
+@media (max-width: 768px) {
+    .table-responsive {
+        margin-bottom: 20px;
+        border-radius: var(--border-radius-sm);
+        max-height: 65vh;
+    }
+    
+    th, td {
+        padding: 10px 12px;
+    }
+    
+    th {
+        font-size: 13px;
+    }
+    
+    td {
+        font-size: 13px;
+    }
+    
+    form {
+        padding: 15px;
+        gap: 12px;
+    }
+    
+    #mainContent {
+        padding: 0;
+    }
+    
+    .action-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+    }
+    
+    .order-status {
+        padding: 3px 8px;
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    form p {
+        width: 100%;
+        min-width: auto;
+    }
+}

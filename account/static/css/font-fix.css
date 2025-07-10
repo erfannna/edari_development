@@ -1,0 +1,365 @@
+/* 
+ * فایل CSS برای اصلاح مشکل فونت دکمه ورود
+ */
+
+/* حذف انیمیشن‌ها برای جلوگیری از مات شدن صفحه - به جز لودینگ دکمه */
+.login-box *:not(.button-loading):not(.button-loading::after) {
+    transition: none !important;
+}
+
+/* استثنا کردن انیمیشن لودر */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* اصلاح فونت‌ها */
+.login-button,
+.login-button span,
+.button-loading,
+button[type="submit"] span {
+    font-family: "IRANSansX", sans-serif !important;
+}
+
+/* اصلاح placeholder در فیلدهای ورودی - افزایش opacity برای خوانایی بهتر */
+/* پشتیبانی از مرورگرهای مختلف */
+::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+    color: #555 !important;
+    font-family: "IRANSansX", sans-serif !important;
+    opacity: 1 !important;
+    font-weight: 500 !important;
+}
+::-moz-placeholder { /* Firefox 19+ */
+    color: #555 !important;
+    font-family: "IRANSansX", sans-serif !important;
+    opacity: 1 !important;
+    font-weight: 500 !important;
+}
+:-ms-input-placeholder { /* IE 10+ */
+    color: #555 !important;
+    font-family: "IRANSansX", sans-serif !important;
+    opacity: 1 !important;
+    font-weight: 500 !important;
+}
+:-moz-placeholder { /* Firefox 18- */
+    color: #555 !important;
+    font-family: "IRANSansX", sans-serif !important;
+    opacity: 1 !important;
+    font-weight: 500 !important;
+}
+
+input::placeholder {
+    font-family: "IRANSansX", sans-serif !important;
+    opacity: 1 !important;
+    color: #555 !important;
+    font-weight: 500 !important;
+}
+
+/* اصلاح خود متن ورودی */
+input {
+    color: #242a36 !important;
+    font-weight: 500 !important;
+    font-family: "IRANSansX", sans-serif !important;
+    font-size: 14px !important;
+}
+
+/* استایل فوکوس فیلدهای ورودی */
+input:focus {
+    color: #000 !important;
+    font-weight: 600 !important;
+}
+
+/* اصلاح رنگ و ظاهر دکمه در حالت لودینگ */
+.button-loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.button-loading span {
+    opacity: 1 !important;
+    display: block !important;
+    color: white !important;
+    padding-right: 20px !important;
+}
+
+/* حفظ انیمیشن چرخش برای نشانگر لودینگ */
+.button-loading::after {
+    content: "";
+    position: absolute !important;
+    width: 18px !important;
+    height: 18px !important;
+    top: 50% !important;
+    right: 20px !important; /* تغییر به راست بخاطر RTL */
+    margin-top: -9px !important;
+    border: 2px solid rgba(255,255,255,0.2) !important;
+    border-radius: 50% !important;
+    border-top-color: #fff !important;
+    animation: spin 0.8s linear infinite !important;
+}
+
+/* تیره‌تر کردن آیکون‌ها برای هماهنگی با متن‌ها */
+.input-with-icon i {
+    color: #006638 !important; /* رنگ تیره‌تر آیکون‌ها */
+    font-size: 18px !important;
+}
+
+.input-with-icon input:focus + i {
+    color: #007E46 !important; /* رنگ آیکون در حالت فوکوس */
+}
+
+.form-group.has-error .input-with-icon i {
+    color: #e14025 !important; /* رنگ تیره‌تر برای آیکون در حالت خطا */
+}
+
+@media (max-width: 480px) {
+    /* استایل‌های خاص موبایل */
+    body {
+        background-color: #ffffff !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        height: 100vh !important;
+        overflow-y: auto !important;
+        position: relative !important;
+    }
+    
+    /* قرار دادن محتوا در وسط صفحه در حالت موبایل */
+    .login-container {
+        background-color: #ffffff !important;
+        padding: 0 20px !important;
+        height: 100vh !important;
+        margin: 0 !important; 
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important; /* قرار گرفتن در وسط عمودی */
+        align-items: center !important; /* قرار گرفتن در وسط افقی */
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+    }
+    
+    .login-box {
+        box-shadow: none !important;
+        border: none !important;
+        background-color: #ffffff !important;
+        padding: 0 !important;
+        margin: 0 auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+    }
+    
+    /* لوگو در موبایل */
+    .logo-container {
+        width: 80px !important;
+        height: 80px !important;
+        margin: 0 auto 20px auto !important;
+    }
+    
+    /* عنوان و زیرعنوان */
+    .login-header {
+        margin-bottom: 20px !important;
+    }
+    
+    .login-header h1 {
+        font-size: 22px !important;
+        margin-bottom: 8px !important;
+    }
+    
+    .login-subtitle {
+        font-size: 14px !important;
+        padding: 0 10px !important;
+        margin-bottom: 0 !important;
+        color: #666666 !important;
+        line-height: 1.5 !important;
+    }
+    
+    /* بهبود استایل فرم */
+    .login-form-container {
+        padding: 0 !important;
+        margin-top: 10px !important;
+        width: 100% !important;
+    }
+    
+    .form-group {
+        margin-bottom: 15px !important;
+    }
+    
+    /* استایل دکمه */
+    .login-button {
+        margin-top: 15px !important;
+        height: 50px !important;
+        font-size: 15px !important;
+        font-weight: 700 !important;
+        border-radius: 12px !important;
+    }
+    
+    /* فوتر */
+    .login-footer {
+        margin-top: 25px !important;
+        padding-bottom: 20px !important;
+    }
+    
+    /* فیلدهای ورودی */
+    .input-with-icon input {
+        height: 50px !important;
+        font-size: 14px !important;
+        padding-right: 45px !important;
+        border-radius: 12px !important;
+    }
+    
+    .input-with-icon i {
+        right: 15px !important;
+        font-size: 18px !important;
+    }
+    
+    /* پیام خطا */
+    .error-message {
+        margin-top: 5px !important;
+        font-size: 12px !important;
+        line-height: 1.4 !important;
+    }
+    
+    /* نوار استاتوس - مخفی کردن موقت */
+    .app-status-bar {
+        display: none !important;
+    }
+    
+    /* افزایش فضای بین المان‌ها */
+    .login-form {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 15px !important;
+    }
+    
+    /* دکمه ورود در موبایل */
+    .button-container {
+        width: 100% !important;
+        margin-top: 10px !important;
+        margin-bottom: 5px !important;
+    }
+}
+
+/* استایل کانتینر عنوان و لوگو */
+.header-title-container {
+    display: flex !important;
+    flex-direction: row-reverse !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-bottom: 20px !important;
+}
+
+.header-title-container h1 {
+    margin: 0 15px 0 0 !important;
+}
+
+/* استایل لوگو - ساده و بزرگ */
+.logo-container {
+    width: 120px !important;
+    height: 120px !important;
+    transition: transform 0.3s ease !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto 25px auto !important;
+    padding: 0 !important;
+    position: relative !important;
+    overflow: visible !important;
+    animation: none !important;
+}
+
+.logo-container::before, .logo-container::after {
+    display: none !important;
+}
+
+.logo-container:hover {
+    transform: translateY(0) !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+.logo-container svg {
+    fill: var(--primary-color) !important;
+    transition: transform 0.3s ease !important;
+    width: 100% !important;
+    height: 100% !important;
+    filter: none !important;
+}
+
+.logo-container:hover svg {
+    transform: scale(1.05) !important;
+    fill: var(--primary-dark) !important;
+}
+
+/* بهبود استایل عنوان */
+.login-header {
+    text-align: center !important;
+    margin-bottom: 30px !important;
+}
+
+.login-header h1 {
+    font-size: 26px !important;
+    color: #333333 !important;
+    margin-bottom: 12px !important;
+    font-weight: 700 !important;
+}
+
+.login-subtitle {
+    color: #666666 !important;
+    font-size: 15px !important;
+    margin-bottom: 35px !important;
+    opacity: 1 !important;
+}
+
+@media (max-width: 480px) {
+    .header-title-container {
+        margin-bottom: 20px !important;
+        flex-direction: row-reverse !important;
+    }
+    
+    .header-title-container h1 {
+        font-size: 24px !important;
+        margin: 0 10px 0 0 !important;
+    }
+    
+    .logo-container {
+        width: 100px !important;
+        height: 100px !important;
+        margin-bottom: 20px !important;
+    }
+    
+    .login-header h1 {
+        font-size: 24px !important;
+        line-height: 1.4 !important;
+        padding: 0 10px !important;
+    }
+    
+    /* بهبود فاصله از لبه‌های صفحه */
+    .login-container {
+        padding: 0 25px !important;
+    }
+    
+    /* بهبود استایل المان‌ها */
+    .form-group {
+        width: 100% !important;
+    }
+    
+    .login-form {
+        width: 100% !important;
+    }
+    
+    .login-button {
+        width: 100% !important;
+    }
+}
+
+/* استایل کانتینر دکمه ورود */
+.button-container {
+    width: 100% !important;
+    margin-top: 20px !important;
+}

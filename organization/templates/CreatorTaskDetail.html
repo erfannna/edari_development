@@ -1,0 +1,642 @@
+{% extends "base.html" %}
+{% load static %}
+{% load to_jalali_datetime %}
+{% block include %}
+<link href="{% static "css/forms.css" %}" rel="stylesheet">
+<link href="{% static "css/log-detail.css" %}" rel="stylesheet">
+<style>
+    /* استایل‌های اختصاصی صفحه جزئیات تسک */
+    .detail-container {
+        padding: 20px;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    
+    .detail-card {
+        background-color: transparent;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        margin-bottom: 24px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .detail-header {
+        background-color: var(--primary-color);
+        padding: 16px 24px;
+        color: white;
+        display: flex;
+        align-items: center;
+    }
+    
+    .detail-header i {
+        font-size: 20px;
+        margin-left: 10px;
+    }
+    
+    .detail-header h2 {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    .detail-body {
+        padding: 24px;
+    }
+    
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    .detail-item {
+        position: relative;
+    }
+    
+    .detail-label {
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--text-color);
+        margin-bottom: 8px;
+        display: block;
+    }
+    
+    .detail-value {
+        background-color: transparent;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        color: var(--text-color);
+        border: 1px solid #e4e7ec;
+        min-height: 45px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .detail-message .detail-value {
+        white-space: pre-wrap;
+        line-height: 1.8;
+        align-items: flex-start;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-word;
+        max-height: none;
+        overflow-y: visible;
+        text-align: right;
+    }
+    
+    .detail-message {
+        grid-column: span 2;
+    }
+    
+    /* استایل برای توضیحات بلند */
+    .description-container {
+        position: relative;
+        max-height: 250px;
+        overflow-y: auto;
+        margin-bottom: 10px;
+        padding-right: 10px;
+        text-align: right;
+        padding: 10px 15px;
+        border-radius: 8px;
+        line-height: 1.7;
+        font-size: 14px;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(0, 126, 70, 0.3) #f5f7fa;
+    }
+    
+    /* سفارشی کردن استایل اسکرولبار برای مرورگرهای کروم و سافاری */
+    .description-container::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .description-container::-webkit-scrollbar-track {
+        background: #f5f7fa;
+        border-radius: 8px;
+    }
+    
+    .description-container::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 126, 70, 0.3);
+        border-radius: 8px;
+    }
+    
+    .detail-status {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        min-width: 85px;
+    }
+    
+    .status-pending {
+        background-color: #fff4dd;
+        color: #ff9a00;
+        border: 1px solid rgba(255, 154, 0, 0.2);
+    }
+    
+    .status-done {
+        background-color: rgba(0, 180, 90, 0.1);
+        color: #00b45a;
+        border: 1px solid rgba(0, 180, 90, 0.2);
+    }
+    
+    .status-not-done {
+        background-color: rgba(239, 57, 78, 0.1);
+        color: var(--error-color);
+        border: 1px solid rgba(239, 57, 78, 0.2);
+    }
+    
+    .task-form {
+        background-color: #f9fafb;
+        border-radius: 12px;
+        border: 1px solid #e4e7ec;
+        padding: 24px;
+        margin-top: 24px;
+    }
+    
+    .task-form h3 {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: var(--text-color);
+    }
+    
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+    
+    .form-group {
+        flex: 1 1 100%;
+        margin-bottom: 16px;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 8px;
+        border: 1px solid #e4e7ec;
+        background-color: white;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(0, 126, 70, 0.1);
+    }
+    
+    .form-footer {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #e4e7ec;
+    }
+    
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        border: none;
+        gap: 8px;
+    }
+    
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+    }
+    
+    .btn-secondary {
+        background-color: #f0f0f1;
+        color: #424750;
+        margin-left: 10px;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #e4e4e6;
+    }
+    
+    .btn i {
+        font-size: 14px;
+    }
+    
+    .message {
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        position: relative;
+        padding-right: 35px;
+    }
+    
+    .message i {
+        position: absolute;
+        right: 12px;
+        top: 12px;
+        font-size: 16px;
+    }
+    
+    .message.info {
+        background-color: rgba(0, 126, 70, 0.05);
+        border: 1px solid rgba(0, 126, 70, 0.1);
+        color: var(--primary-color);
+    }
+    
+    .message.success {
+        background-color: rgba(54, 179, 126, 0.05);
+        border: 1px solid rgba(54, 179, 126, 0.1);
+        color: var(--success-color);
+    }
+    
+    .message.error {
+        background-color: rgba(255, 86, 48, 0.05);
+        border: 1px solid rgba(255, 86, 48, 0.1);
+        color: var(--error-color);
+    }
+    
+    /* استایل برای لیست انجام دهندگان */
+    .assignee-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .assignee-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: transparent;
+        padding: 15px 20px;
+        border-radius: 10px;
+        font-size: 14px;
+        border: 1px solid #e4e7ec;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    
+    .assignee-item:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        transform: translateY(-2px);
+        border-color: rgba(0, 126, 70, 0.2);
+    }
+    
+    .assignee-name {
+        font-weight: 500;
+        color: var(--text-color);
+        font-size: 15px;
+    }
+    
+    .assignee-status-group {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .detail-status {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        min-width: 85px;
+    }
+    
+    .detail-status i {
+        margin-left: 5px;
+        font-size: 11px;
+    }
+    
+    .status-pending {
+        background-color: #fff4dd;
+        color: #ff9a00;
+        border: 1px solid rgba(255, 154, 0, 0.2);
+    }
+    
+    .status-done {
+        background-color: rgba(0, 180, 90, 0.1);
+        color: #00b45a;
+        border: 1px solid rgba(0, 180, 90, 0.2);
+    }
+    
+    .status-not-done {
+        background-color: rgba(239, 57, 78, 0.1);
+        color: var(--error-color);
+        border: 1px solid rgba(239, 57, 78, 0.2);
+    }
+    
+    .no-data {
+        color: var(--text-muted);
+        font-style: italic;
+        font-size: 13px;
+    }
+    
+    /* استایل برای نمایش نوت‌ها */
+    .note-item {
+        margin-bottom: 15px;
+        padding: 15px;
+        background-color: #f9fafb;
+        border-radius: 8px;
+        border-right: 3px solid var(--primary-color);
+    }
+    
+    .note-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+    
+    .note-author {
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--primary-color);
+    }
+    
+    .note-date {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+    
+    .note-content {
+        font-size: 14px;
+        line-height: 1.7;
+        color: var(--text-color);
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+    
+    /* Responsive styles */
+    @media (max-width: 768px) {
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .detail-message {
+            grid-column: span 1;
+        }
+        
+        .form-footer {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .btn {
+            width: 100%;
+        }
+        
+        .btn-secondary {
+            margin-left: 0;
+            order: 2;
+        }
+        
+        .assignee-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 15px;
+        }
+        
+        .assignee-name {
+            font-size: 13px;
+            margin-bottom: 5px;
+            display: block;
+            width: 100%;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .assignee-status-group {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        
+        .detail-status {
+            font-size: 11px;
+            padding: 5px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .detail-status i {
+            margin-left: 4px;
+        }
+    }
+    
+    /* استایل‌های اضافی برای نمایش بهتر در دستگاه‌های کوچک */
+    @media (max-width: 576px) {
+        .detail-body {
+            padding: 16px;
+        }
+        
+        .detail-grid {
+            gap: 15px;
+        }
+        
+        .detail-value {
+            padding: 10px 12px;
+            font-size: 13px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <div class="detail-card">
+        <div class="detail-header">
+            <i class="fa-solid fa-clipboard-list"></i>
+            <h2>اطلاعات تسک</h2>
+        </div>
+        
+        <div class="detail-body">
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <span class="detail-label">موضوع تسک</span>
+                    <div class="detail-value">{{ instance.title }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label">ایجاد کننده</span>
+                    <div class="detail-value">{{ instance.created_by }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label">تاریخ ایجاد</span>
+                    <div class="detail-value">{{ instance.created_at|to_jalali:'%H:%M - %Y/%m/%d' }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label">موعد انجام</span>
+                    <div class="detail-value">{{ instance.remind_at|to_jalali:'%H:%M - %Y/%m/%d' }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label">فایل ضمیمه</span>
+                    <div class="detail-value">
+                        {% if instance.guide_file %}
+                            <a href="{{ instance.guide_file.url }}" class="btn btn-sm btn-primary">
+                                <i class="fa-solid fa-download"></i>
+                                دانلود فایل راهنما
+                            </a>
+                        {% else %}
+                            <span class="no-data">بدون فایل راهنما</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="detail-item detail-message">
+                    <span class="detail-label">توضیحات</span>
+                    <div class="detail-value">
+                        <div class="description-container">
+                            {% if instance.description %}{{ instance.description }}{% else %}<span class="no-data">بدون توضیحات</span>{% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="detail-card">
+        <div class="detail-header">
+            <i class="fa-solid fa-users"></i>
+            <h2>انجام دهندگان</h2>
+        </div>
+        
+        <div class="detail-body">
+            <div class="assignee-list">
+                {% for task in assignments %}
+                    <div class="assignee-item">
+                        <span class="assignee-name">{{ task.user }}</span>
+                        <div class="assignee-status-group">
+                            <span class="detail-status {% if task.is_done %}status-done{% else %}status-not-done{% endif %}">
+                                {% if task.is_done %}
+                                    <i class="fa-solid fa-check-circle"></i> انجام شده
+                                {% else %}
+                                    <i class="fa-regular fa-circle-xmark"></i> انجام نشده
+                                {% endif %}
+                            </span>
+                            <span class="detail-status status-pending">
+                                <i class="fa-solid fa-clock"></i> {{ task.status }}
+                            </span>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="assignee-item">
+                        <span class="no-data">انجام دهنده‌ای تعیین نشده است.</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="detail-card">
+        <div class="detail-header">
+            <i class="fa-solid fa-comments"></i>
+            <h2>یادداشت‌ها</h2>
+        </div>
+        
+        <div class="detail-body">
+            {% for note in notes %}
+                <div class="note-item">
+                    <div class="note-header">
+                        <span class="note-author">
+                            {{ note.user }}
+                            {% if note.user == instance.created_by %}(ایجاد کننده){% endif %}
+                            | {{ note.user.groups.first.name }}
+                        </span>
+                        <span class="note-date">{{ note.created|to_jalali:'%Y/%m/%d - %H:%M' }}</span>
+                    </div>
+                    <div class="note-content">{{ note.text }}</div>
+                </div>
+            {% empty %}
+                <span class="no-data">یادداشتی وجود ندارد.</span>
+            {% endfor %}
+        </div>
+    </div>
+    
+    {% with permissions=request.user.get_all_permissions %}
+    {% if can_edit %}
+    <div class="detail-card">
+        <div class="detail-header">
+            <i class="fa-solid fa-pen-to-square"></i>
+            <h2>اعمال تغییرات</h2>
+        </div>
+        
+        <div class="detail-body">
+            {% if message %}
+                <div class="message {% if status == '#32CD32' %}success{% else %}info{% endif %}">
+                    <i class="fa-solid fa-info-circle"></i>
+                    {{ message }}
+                </div>
+            {% endif %}
+            
+            <form class="task-form" method="post">
+                <div class="form-row">
+                    {{ form.as_p }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="text" class="detail-label">یادداشت جدید</label>
+                    {{ note_form.text }}
+                </div>
+                
+                <div class="form-footer">
+                    <button type="button" class="btn btn-secondary" onclick="window.history.back()">
+                        <i class="fa-solid fa-arrow-right"></i>
+                        بازگشت
+                    </button>
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-check"></i>
+                        ثبت تغییرات
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+    {% endwith %}
+</div>
+{% endblock %}
+
+{% block domready %}
+<script>
+    // اضافه کردن کلاس‌های استایل به فیلدهای فرم
+    $(document).ready(function() {
+        $("select, input, textarea").addClass("form-control");
+        
+        // حذف فاصله‌های اضافی از ابتدا و انتهای متن توضیحات
+        const $descriptionContainer = $('.description-container');
+        let descriptionHTML = $descriptionContainer.html();
+        
+        if (descriptionHTML) {
+            // حذف فاصله‌های ابتدایی از متن HTML
+            descriptionHTML = descriptionHTML.replace(/^\s+/g, '');
+            $descriptionContainer.html(descriptionHTML);
+        }
+    });
+</script>
+{% endblock %}

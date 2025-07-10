@@ -1,0 +1,570 @@
+{% extends "base.html" %}
+{% load static %}
+{% block include %}
+<link href="{% static "css/forms.css" %}" rel="stylesheet">
+<style>
+    /* استایل‌های اختصاصی فرم گزارش مشکلات */
+    .request-form-container {
+        padding: 20px;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-color);
+        position: relative;
+        display: inline-block;
+        padding-right: 12px;
+    }
+    
+    .form-card {
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        position: relative;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .form-card:hover {
+        box-shadow: 0 5px 15px rgba(0, 126, 70, 0.1);
+    }
+    
+    .form-header {
+        background-color: var(--primary-color);
+        padding: 16px 24px;
+        color: white;
+        display: flex;
+        align-items: center;
+    }
+    
+    .form-header i {
+        font-size: 18px;
+        margin-left: 10px;
+    }
+    
+    .form-header h2 {
+        font-size: 14px;
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    .form-body {
+        padding: 24px;
+    }
+    
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -10px 20px;
+    }
+    
+    .form-group {
+        padding: 0 10px;
+        flex: 1 0 50%;
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+    
+    /* استایل جدید برای چک‌باکس‌ها */
+    .form-group.checkbox-group {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding-top: 28px;
+    }
+    
+    .form-group.checkbox-group label {
+        margin-bottom: 0;
+        margin-right: 8px;
+        cursor: pointer;
+    }
+    
+    /* چک‌باکس سفارشی */
+    .custom-checkbox {
+        position: relative;
+        display: flex;
+        align-items: center;
+        margin-right: 5px;
+    }
+    
+    .custom-checkbox input[type="checkbox"] {
+        opacity: 0;
+        position: absolute;
+        cursor: pointer;
+        z-index: 2;
+        width: 22px;
+        height: 22px;
+    }
+    
+    .checkbox-icon {
+        display: inline-block;
+        width: 22px;
+        height: 22px;
+        margin-left: 12px;
+        border: 2px solid var(--primary-color);
+        border-radius: 4px;
+        background-color: white;
+        transition: all 0.2s ease;
+        position: relative;
+    }
+    
+    .custom-checkbox input[type="checkbox"]:checked + .checkbox-icon {
+        background-color: var(--primary-color);
+    }
+    
+    .custom-checkbox input[type="checkbox"]:checked + .checkbox-icon:after {
+        content: '\f00c';
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 14px;
+        color: white;
+    }
+    
+    .custom-checkbox input[type="checkbox"]:focus + .checkbox-icon {
+        box-shadow: 0 0 0 3px rgba(0, 126, 70, 0.2);
+    }
+    
+    /* استایل سوئیچ دو حالته */
+    .toggle-switch-container {
+        display: flex;
+        align-items: center;
+    }
+    
+    .toggle-switch {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+    }
+    
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+        position: absolute;
+    }
+    
+    .toggle-slider {
+        display: inline-block;
+        width: 52px;
+        height: 26px;
+        background-color: #eeeeee;
+        border-radius: 26px;
+        position: relative;
+        transition: all 0.3s ease;
+        margin-left: 10px;
+    }
+    
+    .toggle-slider:before {
+        content: "";
+        position: absolute;
+        height: 20px;
+        width: 20px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        z-index: 2;
+    }
+    
+    .toggle-switch input:checked + .toggle-slider {
+        background-color: var(--primary-color);
+    }
+    
+    .toggle-switch input:checked + .toggle-slider:before {
+        transform: translateX(26px);
+    }
+    
+    .toggle-text {
+        display: inline-block;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        margin-right: 5px;
+    }
+    
+    .form-footer {
+        display: flex;
+        justify-content: flex-end;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+    
+    .form-tip {
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: flex-start;
+    }
+    
+    .form-tip i {
+        color: var(--primary-color);
+        font-size: 18px;
+        margin-left: 10px;
+        margin-top: 2px;
+    }
+    
+    .form-tip p {
+        margin: 0;
+        color: var(--text-light);
+        font-size: 13px;
+        line-height: 1.5;
+    }
+    
+    .message {
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-bottom: 24px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .message.success {
+        background-color: rgba(0, 126, 70, 0.1);
+        color: var(--primary-color);
+    }
+    
+    .message.error {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+    }
+    
+    .message.info {
+        background-color: rgba(13, 110, 253, 0.1);
+        color: #0d6efd;
+    }
+    
+    .message i {
+        margin-left: 8px;
+        font-size: 16px;
+    }
+    
+    /* استایل برای دکمه‌ها */
+    .btn {
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 500;
+        text-align: center;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        font-size: 14px;
+    }
+    
+    .btn i {
+        margin-left: 6px;
+    }
+    
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+    }
+    
+    .btn-secondary {
+        background-color: #f1f1f1;
+        color: var(--text-color);
+        margin-left: 10px;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #e1e1e1;
+    }
+    
+    /* ریسپانسیو */
+    @media (max-width: 768px) {
+        .form-group {
+            flex: 1 0 100%;
+        }
+        .page-title {
+            font-size: .9rem;
+            font-weight: 700;
+            color: var(--text-color);
+            position: relative;
+            display: inline-block;
+            padding-right: 12px;
+        }
+        
+        .form-footer {
+            flex-direction: column;
+        }
+        
+        .btn {
+            width: 100%;
+            margin: 5px 0;
+        }
+        
+        .btn-secondary {
+            margin-left: 0;
+            margin-bottom: 10px;
+        }
+    }
+    
+    /* استایل رادیو باتن‌های سفارشی */
+    .radio-group-container {
+        display: flex;
+        flex-direction: row;
+        gap: 15px;
+        margin-top: 8px;
+        justify-content: center;
+    }
+    
+    .custom-radio {
+        position: relative;
+    }
+    
+    .radio-input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+    
+    .radio-label {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background-color: #f8f8f8;
+        border: 1px solid #ddd;
+        font-weight: 500;
+        min-width: 80px;
+        text-align: center;
+    }
+    
+    .radio-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        border: 2px solid #aaa;
+        margin-left: 6px;
+        position: relative;
+        transition: all 0.2s ease;
+    }
+    
+    .radio-text {
+        font-size: 12px;
+        font-weight: 500;
+        text-align: center;
+    }
+    
+    /* استایل برای گزینه مؤثر بوده */
+    .effective-yes .radio-icon {
+        border-color: #00b45a;
+    }
+    
+    .radio-input:checked + .effective-yes {
+        background-color: rgba(0, 180, 90, 0.1);
+        border-color: #00b45a;
+        box-shadow: 0 2px 8px rgba(0, 180, 90, 0.2);
+    }
+    
+    .radio-input:checked + .effective-yes .radio-icon {
+        background-color: #00b45a;
+        color: white;
+    }
+    
+    .radio-input:checked + .effective-yes .radio-icon:after {
+        content: "✓";
+        position: absolute;
+        font-size: 12px;
+        font-weight: bold;
+        color: white;
+    }
+    
+    .radio-input:checked + .effective-yes .radio-text {
+        color: #00b45a;
+    }
+    
+    /* استایل برای گزینه مؤثر نبوده */
+    .effective-no .radio-icon {
+        border-color: #dc3545;
+    }
+    
+    .radio-input:checked + .effective-no {
+        background-color: rgba(220, 53, 69, 0.1);
+        border-color: #dc3545;
+        box-shadow: 0 2px 8px rgba(220, 53, 69, 0.2);
+    }
+    
+    .radio-input:checked + .effective-no .radio-icon {
+        background-color: #dc3545;
+        color: white;
+    }
+    
+    .radio-input:checked + .effective-no .radio-icon:after {
+        content: "✕";
+        position: absolute;
+        font-size: 11px;
+        font-weight: bold;
+        color: white;
+    }
+    
+    .radio-input:checked + .effective-no .radio-text {
+        color: #dc3545;
+    }
+    
+    /* مخفی کردن چک‌باکس اصلی */
+    #effective {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="request-form-container">
+    <div class="form-card">
+        <div class="form-header">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <h2>فرم ثبت گزارش مشکلات</h2>
+        </div>
+        
+        <div class="form-body">
+            {% if message %}
+            <div class="message {% if status %}{{ status }}{% else %}info{% endif %}">
+                <i class="fa-solid fa-info-circle"></i>
+                {{ message }}
+            </div>
+            {% endif %}
+            
+            <div class="form-tip">
+                <i class="fa-solid fa-info-circle"></i>
+                <p>لطفاً تمام فیلدهای ضروری را با دقت تکمیل کنید. گزارش‌های ناقص بررسی نخواهند شد.</p>
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.type.id_for_label }}">{{ form.type.label }}</label>
+                        {{ form.type }}
+                    </div>
+                    
+                    <div class="form-group checkbox-group">
+                        <div class="radio-group-container">
+                            <div class="custom-radio">
+                                <input type="radio" id="effective_yes" name="effective_radio" class="radio-input" value="1">
+                                <label for="effective_yes" class="radio-label effective-yes">
+                                    <div style="display: flex; align-items: center; justify-content: center;">
+                                        <span class="radio-icon"></span>
+                                        <span class="radio-text">مؤثر بوده</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="custom-radio">
+                                <input type="radio" id="effective_no" name="effective_radio" class="radio-input" value="0">
+                                <label for="effective_no" class="radio-label effective-no">
+                                    <div style="display: flex; align-items: center; justify-content: center;">
+                                        <span class="radio-icon"></span>
+                                        <span class="radio-text">مؤثر نبوده</span>
+                                    </div>
+                                </label>
+                            </div>
+                            {{ form.effective }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                        {{ form.description }}
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.corrective_actions.id_for_label }}">{{ form.corrective_actions.label }}</label>
+                        {{ form.corrective_actions }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.prevention_actions.id_for_label }}">{{ form.prevention_actions.label }}</label>
+                        {{ form.prevention_actions }}
+                    </div>
+                </div>
+                
+                <div class="form-footer">
+                    <button type="button" class="btn btn-secondary" onclick="window.location.href='{% url 'organization:problem_report_logs' %}';">
+                        <i class="fa-solid fa-xmark"></i>
+                        انصراف
+                    </button>
+                    {% if can_edit %}
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-check"></i>
+                        {% if instance %}به‌روزرسانی گزارش{% else %}ثبت گزارش{% endif %}
+                    </button>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block domready %}
+<script>
+    // اضافه کردن کلاس‌های استایل به فیلدهای فرم
+    $(document).ready(function() {
+        $("select, input:not([type='checkbox']):not([type='radio']), textarea").addClass("form-control");
+        
+        // اتصال رادیو باتن‌ها به چک‌باکس اصلی
+        const effectiveCheckbox = document.getElementById("effective");
+        const radioYes = document.getElementById("effective_yes");
+        const radioNo = document.getElementById("effective_no");
+        
+        // تنظیم وضعیت اولیه رادیو باتن‌ها بر اساس چک‌باکس
+        if (effectiveCheckbox.checked) {
+            radioYes.checked = true;
+        } else {
+            radioNo.checked = true;
+        }
+        
+        // اضافه کردن رویدادهای تغییر
+        radioYes.addEventListener("change", function() {
+            if (this.checked) {
+                effectiveCheckbox.checked = true;
+            }
+        });
+        
+        radioNo.addEventListener("change", function() {
+            if (this.checked) {
+                effectiveCheckbox.checked = false;
+            }
+        });
+    });
+</script>
+{% endblock %}

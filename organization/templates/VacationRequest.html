@@ -1,0 +1,301 @@
+{% extends "base.html" %}
+{% load static %}
+{% block include %}
+<link href="{% static 'css/forms.css' %}" rel="stylesheet">
+<link href="{% static 'css/jalalidatepicker.min.css' %}" rel="stylesheet">
+<script src="{% static 'js/jalalidatepicker.min.js' %}"></script>
+<style>
+    /* استایل‌های اختصاصی فرم درخواست مرخصی */
+    .request-form-container {
+        padding: 20px;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-color);
+        position: relative;
+        display: inline-block;
+        padding-right: 12px;
+    }
+    
+    .form-card {
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        position: relative;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .form-card:hover {
+        box-shadow: 0 5px 15px rgba(0, 126, 70, 0.1);
+    }
+    
+    .form-header {
+        background-color: var(--primary-color);
+        padding: 16px 24px;
+        color: white;
+        display: flex;
+        align-items: center;
+    }
+    
+    .form-header i {
+        font-size: 18px;
+        margin-left: 10px;
+    }
+    
+    .form-header h2 {
+        font-size: 14px;
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    .form-body {
+        padding: 24px;
+    }
+    
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -10px 20px;
+    }
+    
+    .form-group {
+        padding: 0 10px;
+        flex: 1 0 50%;
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        background-color: #f5f7fa;
+        border: 1px solid #e4e7ec;
+        border-radius: 8px;
+        font-family: 'IRANSansX', sans-serif;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(0, 126, 70, 0.1);
+    }
+    
+    .form-footer {
+        display: flex;
+        justify-content: flex-end;
+        padding: 16px 24px;
+        background-color: #f9fafb;
+        border-top: 1px solid #e4e7ec;
+    }
+    
+    .form-tip {
+        background-color: transparent;
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        position: relative;
+        padding-right: 35px;
+    }
+    
+    .form-tip i {
+        color: var(--primary-color);
+        font-size: 18px;
+        position: absolute;
+        right: 12px;
+        top: 12px;
+    }
+    
+    .form-tip p {
+        margin: 0;
+        font-size: 13px;
+        color: #333;
+    }
+    
+    /* Button styles */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        border: none;
+    }
+    
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+    }
+    
+    .btn-secondary {
+        background-color: #f0f0f1;
+        color: #424750;
+        margin-left: 10px;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #e4e4e6;
+    }
+    
+    .btn i {
+        margin-left: 6px;
+        font-size: 14px;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .form-group {
+            flex: 1 0 100%;
+        }
+        .page-title {
+        font-size: .9rem;
+        font-weight: 700;
+        color: var(--text-color);
+        position: relative;
+        display: inline-block;
+        padding-right: 12px;
+    }
+        
+        .form-footer {
+            flex-direction: column;
+        }
+        
+        .btn {
+            width: 100%;
+            margin: 5px 0;
+        }
+        
+        .btn-secondary {
+            margin-left: 0;
+            margin-bottom: 10px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="request-form-container">
+    <div class="form-card">
+        <div class="form-header">
+            <i class="fa-solid fa-calendar-days"></i>
+            <h2>فرم ثبت درخواست مرخصی</h2>
+        </div>
+        
+        <div class="form-body">
+            {% if message %}
+            <div class="message {% if status %}{{ status }}{% else %}info{% endif %}">
+                {{ message }}
+            </div>
+            {% endif %}
+            
+            <div class="form-tip">
+                <i class="fa-solid fa-info-circle"></i>
+                <p>لطفاً تمام فیلدهای ضروری را با دقت تکمیل کنید. درخواست‌های ناقص بررسی نخواهند شد.</p>
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.alternative.id_for_label }}">{{ form.alternative.label }}</label>
+                        {{ form.alternative }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.type.id_for_label }}">{{ form.type.label }}</label>
+                        {{ form.type }}
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.start_date.id_for_label }}">{{ form.start_date.label }}</label>
+                        {{ form.start_date }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.end_date.id_for_label }}">{{ form.end_date.label }}</label>
+                        {{ form.end_date }}
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.duration.id_for_label }}">{{ form.duration.label }}</label>
+                        {{ form.duration }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                        {{ form.description }}
+                    </div>
+                </div>
+                
+                <div class="form-footer">
+                    <button type="button" class="btn btn-secondary" onclick="window.location.href='{% url 'organization:vacation_requests' %}'">
+                        <i class="fa-solid fa-xmark"></i>
+                        انصراف
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-check"></i>
+                        ثبت درخواست
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{{ form.media }}
+{% endblock %}
+
+{% block domready %}
+<script>
+    jalaliDatepicker.updateOptions({"minDate": "today"});
+    $("#type").change(function() {
+        if($(this).val() == "روزانه") {
+            jalaliDatepicker.updateOptions({"time": false});
+        } else {
+            jalaliDatepicker.updateOptions({"time": true});
+        }
+    });
+    
+    // auto-hide on outside click
+    document.addEventListener('click', function(event) {
+        var dp = document.querySelector('.jdp-container');
+        var input = document.querySelector('input[data-jdp-non-chat]');
+        if (!dp) return;
+        if (dp.contains(event.target) || (input && input.contains(event.target))) return;
+        jalaliDatepicker.hide();
+        var overlay = document.querySelector('.jdp-modal-overlay');
+        if (overlay) overlay.style.display = 'none';
+    });
+    
+    // اضافه کردن کلاس‌های استایل به فیلدهای فرم
+    $(document).ready(function() {
+        $("select, input, textarea").addClass("form-control");
+    });
+</script>
+<script src="{% static 'js/search-form.js' %}"></script>
+{% endblock %}

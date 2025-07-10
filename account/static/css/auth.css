@@ -1,0 +1,1029 @@
+@font-face {
+    font-family: 'IRANSansX';
+    src: url('/static/fonts/IRANSansX-Regular.woff2') format('woff2'),
+         url('/static/fonts/IRANSansX-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'IRANSansX';
+    src: url('/static/fonts/IRANSansX-Bold.woff2') format('woff2'),
+         url('/static/fonts/IRANSansX-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Exo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+.mediaViewInfo {
+		--web-view-name: Video watch;
+		--web-view-id: Video_watch;
+		--web-scale-on-resize: true;
+		--web-enable-deep-linking: true;
+}
+:root {
+    --web-view-ids: Video_watch;
+    --primary-color: #007E46;
+    --primary-light: #00a35c;
+    --primary-dark: #006638;
+    --secondary-color: #788497;
+    --accent-color: #59D8D8;
+    --success-color: #36B37E;
+    --warning-color: #FFAB00;
+    --error-color: #FF5630;
+    --text-color: #242a36;
+    --text-light: #6B778C;
+    --text-muted: #97A0AF;
+    --text-disabled: #A5ADBA;
+    --bg-color: #ffffff;
+    --bg-light: #FFFFFF;
+    --bg-card: #F8FBFF;
+    --border-radius-xs: 4px;
+    --border-radius-sm: 8px;
+    --border-radius: 12px;
+    --border-radius-lg: 16px;
+    --box-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    --box-shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.12);
+    --box-shadow-hover: 0 8px 12px rgba(0, 0, 0, 0.15);
+    --transition: all 0.3s ease;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    border: none;
+}
+#Home::-webkit-scrollbar {
+    display: none;
+}
+#Home {
+    -ms-overflow-style: none;
+}
+#Home {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: max-content;
+    background-color: rgba(255,255,255,1);
+    overflow: hidden;
+    --web-view-name: Video watch;
+    --web-view-id: Video_watch;
+    --web-scale-on-resize: true;
+    --web-enable-deep-linking: true;
+}
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+@keyframes fadein {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+#header {
+    fill: rgba(255,255,255,1);
+}
+.header {
+    filter: drop-shadow(0px 1px 3px rgba(0, 0, 0, 0.161));
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 4.05em;
+    left: 0;
+    top: 0;
+}
+.Header {
+    position: fixed;
+    top: .65em;
+    width: 100%;
+    text-align: center;
+    align-items: center;
+    font-family: "IRANSansX", sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 25px;
+    color: #007E46;
+}
+.form {
+    display: flex;
+    position: relative;
+    overflow: visible;
+    margin-top: 7em;
+    width: 100%;
+    text-align: center;
+    font-family: "IRANSansX", sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    flex-direction: column;
+    align-items: center;
+    direction: rtl;
+}
+h4 {
+	font-family: "IRANSansX", sans-serif;
+}
+input {
+    position: relative;
+    margin-bottom: 1em;
+    width: 300px;
+    height: max-content;
+    padding: 1em;
+    color: black;
+    border-radius: 1em .2em 1em 1em;
+    direction: rtl;
+    text-align: right;
+    font-family: "IRANSansX", sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: .8em;
+    outline-color: #007E46;
+    background-color: rgba(0, 126, 70, 0.05);
+    transition: .5s;
+}
+input:hover {
+    background-color: white;
+    outline-style: solid;
+    outline-color: #007E46;
+    outline-width: 1px;
+    color: #007E46;
+}
+input:focus {
+    background-color: white;
+    outline-style: solid;
+    outline-color: #007E46;
+    outline-width: 1px;
+    color: black;
+}
+.invalid-input {
+    outline: solid 1px red;
+}
+p {
+    position: relative;
+}
+label {
+    position: absolute;
+    direction: rtl;
+    top: 12px;
+    right: 15px;
+    color: gray;
+    font-family: "IRANSansX", sans-serif;
+    font-size: 14px;
+    z-index: 1;
+    transition: 0.3s;
+}
+.label-up {
+    top: -10px;
+    padding: 0 3px;
+    background-color: white;
+}
+.submit {
+    position: relative;
+    margin-top: 2em;
+    margin-bottom: 1.2em;
+    width: auto;
+    padding: 8px 20px;
+    border-radius: 5px;
+    text-align: center;
+    font-family: "IRANSansX", sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: .8em;
+    color: white;
+    background-color: #007E46;
+    cursor: pointer;
+    transition: .5s;
+}
+.submit:hover {
+    background-color: rgba(0, 126, 70, 0.05);
+    outline-style: solid;
+    outline-color: #007E46;
+    outline-width: 1px;
+    color: #007E46;
+    font-weight: bold;
+    filter: drop-shadow(0px 0px 6px rgba(0, 0, 0, 0.1));
+}
+#verify {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10em;
+}
+.verify-text {
+    font-family: "IRANSansX", sans-serif;
+    font-weight: 300;
+    font-size: 14px;
+    direction: rtl;
+}
+#verify-code {
+    position: relative;
+    margin: 20px auto;
+    width: max-content;
+}
+.flex-box {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+#code-digit {
+    width: 195px;
+    background: none;
+    z-index: 2;
+    direction: ltr;
+    text-align: left;
+    letter-spacing: 36px;
+    padding: 3px 0 3px 17px;
+    margin: 0;
+    font-size: 26px;
+    border-radius: 0;
+    outline: none !important;
+    user-select: none;
+}
+.code-digit {
+    display: block;
+    width: 45px;
+    height: 45px;
+    border-radius: 5px;
+    font-size: 26px;
+    padding: 0;
+    text-align: center;
+    background-color: whitesmoke;
+    border: solid 1px gray;
+}
+#message {
+    position: relative;
+    direction: rtl;
+    font-size: 14px;
+    font-family: "IRANSansX", sans-serif;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    background-color: whitesmoke;
+    border-radius: 5px;
+    color: red;
+}
+.or_via {
+    position: relative;
+    overflow: visible;
+    margin-top: 1.5em;
+    margin-bottom: 0.3em;
+    align-items: center;
+    font-family: "IRANSansX", sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: .85em;
+    color: gray;
+}
+.google {
+    position: relative;
+    width: 2.2em;
+    height: 2.2em;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+
+@media only screen and (min-width: 550px) {
+        #Home {
+            width: 430px;
+            left: 20%;
+            text-align: center;
+            justify-content: center;
+        }
+        .header {
+            width: 430px;
+            left: 20%;
+        }
+        .Header {
+            width: 430px;
+        }
+        .footer {
+            width: 430px;
+            left: 20%;
+        }
+        .New {
+            width: 400px;
+            margin-left: 15%;
+            margin-right: 15%;
+        }
+        .dashboard_icon {
+            left: 385px;
+            margin-left: 20%;
+            margin-right: 20%;
+        }
+        .home_icon {
+            margin-left: 20%;
+            margin-right: 20%;
+        }
+}
+
+@media only screen and (min-width: 1000px) {
+        #Home {
+            width: 430px;
+            left: 33%;
+            text-align: center;
+            justify-content: center;
+        }
+        .header {
+            width: 430px;
+            left: 33%;
+        }
+        .Header {
+            width: 430px;
+        }
+        .footer {
+            width: 430px;
+            left: 33%;
+        }
+        .New {
+            width: 400px;
+            margin-left: 33%;
+            margin-right: 33%;
+        }
+        .dashboard_icon {
+            left: 385px;
+            margin-left: 33%;
+            margin-right: 34%;
+        }
+        .home_icon {
+            margin-left: 33%;
+        }
+        .nrcRoom {
+            margin-left: 30%;
+            margin-right: 33%;
+        }
+        .videoIco {
+            margin-left: 32%;
+            margin-right: 33%;
+        }
+        .new_events {
+            margin-left: 0%;
+            margin-right: 90%;
+        }
+}
+
+body {
+    background-color: #ffffff;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+    font-family: "IRANSansX", sans-serif;
+    direction: rtl;
+}
+
+/* کانتینر اصلی */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #ffffff;
+    padding: 20px;
+    position: relative;
+}
+
+/* باکس لاگین */
+.login-box {
+    width: 100%;
+    max-width: 400px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 5px 30px rgba(0, 0, 0, 0.05);
+    padding: 30px;
+    border: none;
+    z-index: 2;
+    position: relative;
+}
+
+.login-box:hover {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* افکت دکوراتیو */
+.login-container::before,
+.login-container::after {
+    display: none;
+}
+
+/* سربرگ لاگین */
+.login-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.login-header h1 {
+    font-size: 20px;
+    color: #333333;
+    margin-bottom: 12px;
+    font-weight: 700;
+}
+
+.login-subtitle {
+    color: #6e6e6e;
+    font-size: 14px;
+    margin-bottom: 35px;
+    opacity: 1;
+}
+
+/* محتوای فرم */
+.login-form-container {
+    padding: 0;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.login-form h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: var(--text-color);
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* گروه‌های فرم */
+.form-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+/* فیلدهای ورودی با آیکون */
+.input-with-icon {
+    position: relative;
+}
+
+.input-with-icon i {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--primary-color);
+    font-size: 16px;
+    transition: var(--transition);
+    pointer-events: none;
+}
+
+.input-with-icon input {
+    padding-right: 40px;
+    border: 2px solid var(--primary-color);
+    background-color: #ffffff;
+    color: #242a36;
+    height: 48px;
+    width: 100%;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: var(--transition);
+}
+
+.input-with-icon input:focus {
+    border-color: var(--primary-color);
+    border-width: 2px;
+    box-shadow: 0 0 0 3px rgba(0, 126, 70, 0.1);
+    outline: none;
+}
+
+.input-with-icon input:hover {
+    border-color: var(--primary-dark);
+    box-shadow: 0 0 0 2px rgba(0, 126, 70, 0.05);
+}
+
+.input-with-icon input:focus + i {
+    color: var(--primary-color);
+}
+
+.input-with-icon input::placeholder {
+    color: #555555;
+    opacity: 1;
+    font-family: "IRANSansX", sans-serif;
+    font-weight: 500;
+}
+
+.input-with-icon input:focus::placeholder {
+    color: var(--primary-dark);
+    opacity: 0.9;
+    font-family: "IRANSansX", sans-serif;
+}
+
+/* استایل خطا */
+.error-message {
+    display: none;
+    color: #ff5630;
+    font-size: 12px;
+    margin-top: 5px;
+    padding-right: 5px;
+    transition: none !important;
+}
+
+.form-group.has-error .error-message {
+    display: block;
+}
+
+.form-group.has-error input {
+    border-color: #ff5630;
+    background-color: rgba(255, 86, 48, 0.05);
+    transition: none;
+}
+
+.form-group.has-error .input-with-icon i {
+    color: #ff5630;
+    transition: none;
+}
+
+/* انیمیشن دکمه لودینگ */
+.button-loading {
+    position: relative;
+    pointer-events: none;
+    font-family: "IRANSansX", sans-serif;
+}
+
+.button-loading::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 15px;
+    margin-top: -10px;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.spinner {
+    display: none;
+}
+
+/* پیغام خطا */
+.alert {
+    padding: 12px 15px;
+    border-radius: 10px;
+    background-color: rgba(255, 86, 48, 0.08);
+    border: none;
+    margin-bottom: 25px;
+    font-size: 14px;
+    color: var(--error-color);
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.alert::before {
+    content: "!";
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background-color: var(--error-color);
+    color: white;
+    border-radius: 50%;
+    margin-left: 12px;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+/* فوتر لاگین */
+.login-footer {
+    text-align: center;
+    margin-top: 25px;
+    padding-top: 20px;
+    color: #6e6e6e;
+    font-size: 13px;
+}
+
+.login-footer i {
+    color: var(--primary-color);
+}
+
+/* استایل‌های ریسپانسیو برای لاگین */
+@media (max-width: 480px) {
+    body {
+        background-color: #ffffff;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        overflow-y: auto;
+    }
+    
+    .login-container {
+        padding: 0 20px;
+        background-color: #ffffff;
+        margin: 0;
+        min-height: 100vh;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .login-box {
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        max-width: none;
+        border-radius: 0;
+        box-shadow: none;
+        border: none;
+        background-color: #ffffff;
+    }
+    
+    .logo-container {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px auto;
+    }
+    
+    .login-header h1 {
+        font-size: 22px;
+        color: #222;
+        margin-bottom: 8px;
+    }
+    
+    .login-subtitle {
+        font-size: 14px;
+        margin-bottom: 15px;
+        padding: 0 10px;
+        line-height: 1.5;
+    }
+    
+    .input-with-icon input {
+        height: 50px;
+        border-width: 1px;
+        border-color: #e0e0e0;
+        margin-bottom: 0;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+        background-color: #ffffff;
+        font-size: 14px;
+        padding-right: 45px;
+    }
+    
+    .login-button {
+        padding: 15px 0;
+        height: 50px;
+        font-size: 15px;
+        border-radius: 12px;
+        margin-top: 15px;
+        box-shadow: 0 8px 15px rgba(0, 126, 70, 0.15);
+        font-weight: 700;
+    }
+    
+    .login-footer {
+        color: #888;
+        margin-top: 25px;
+        padding-bottom: 20px;
+        font-size: 12px;
+    }
+    
+    /* بهبود استایل ورودی‌ها در موبایل */
+    .input-with-icon input:focus {
+        box-shadow: 0 4px 10px rgba(0, 126, 70, 0.1);
+        border-color: var(--primary-color);
+    }
+    
+    /* استایل خطا در موبایل */
+    .form-group.has-error .error-message {
+        margin-top: 5px;
+        font-size: 12px;
+        background-color: rgba(255, 86, 48, 0.08);
+        padding: 8px 12px;
+        border-radius: 8px;
+        color: #ff5630;
+    }
+    
+    .form-group.has-error input {
+        border-color: #ff5630;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 2px rgba(255, 86, 48, 0.15);
+    }
+    
+    /* بهبود استایل پیام خطا در موبایل */
+    .alert {
+        margin-bottom: 20px;
+        padding: 10px 12px;
+        font-size: 12px;
+        border-radius: 8px;
+    }
+    
+    .alert::before {
+        width: 18px;
+        height: 18px;
+        margin-left: 8px;
+    }
+    
+    /* بهینه‌سازی برای صفحه تمام صفحه */
+    .login-form-container {
+        padding: 0;
+    }
+    
+    .login-header {
+        margin-bottom: 20px;
+    }
+    
+    /* افزایش فاصله بین فیلدها */
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    /* نوار وضعیت اپلیکیشن - این باقی می‌ماند */
+    .app-status-bar {
+        display: none;
+    }
+    
+    .app-status-bar::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 48px;
+        height: 4px;
+        background-color: rgba(255, 255, 255, 0.5);
+        border-radius: 4px;
+    }
+    
+    /* اضافه کردن افکت لمس روی دکمه */
+    .login-button:active {
+        transform: scale(0.97);
+    }
+    
+    /* بهبود آیکون در موبایل */
+    .input-with-icon i {
+        font-size: 18px;
+        right: 15px;
+    }
+}
+
+@media (min-width: 768px) {
+    .login-container {
+        background-color: #f9f9f9;
+    }
+    
+    .login-box {
+        padding: 35px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    }
+    
+    .logo-container {
+        margin-bottom: 30px;
+    }
+}
+
+/* پشتیبانی از حالت تاریک */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --primary-color: #00A65B;
+        --primary-light: #00C26C;
+        --primary-dark: #007E46;
+        --text-color: #F9FAFB;
+        --text-light: #E5E7EB;
+        --bg-color: #111827;
+        --bg-light: #1F2937;
+    }
+    
+    input[type="text"],
+    input[type="number"],
+    input[type="password"],
+    .text-input {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: var(--text-color);
+    }
+    
+    input:focus,
+    .text-input:focus {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+}
+
+.input-with-icon:focus-within i {
+    color: var(--primary-color);
+}
+
+/* فیلدهای ورودی */
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-control {
+    width: 100%;
+    height: 48px;
+    padding: 0 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    background-color: #fff;
+    font-size: 14px;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #007E46;
+    box-shadow: 0 0 0 3px rgba(0, 126, 70, 0.12);
+    outline: none;
+}
+
+.form-control::placeholder {
+    color: #a0a0a0;
+}
+
+.login-button {
+    display: block;
+    width: 100%;
+    height: 48px;
+    padding: 15px 0;
+    border: none;
+    border-radius: 10px;
+    background-color: var(--primary-color);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: "IRANSansX", sans-serif;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-top: 25px;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-button:hover {
+    background-color: var(--primary-dark);
+}
+
+.login-button::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    border-radius: 100%;
+    transform: scale(1, 1) translate(-50%);
+    transform-origin: 50% 50%;
+}
+
+.login-button:active::after {
+    animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(0, 0);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(20, 20);
+        opacity: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-button {
+        padding: 15px 0;
+        height: 50px;
+        font-size: 15px;
+        border-radius: 12px;
+        margin-top: 30px;
+        box-shadow: 0 8px 15px rgba(0, 126, 70, 0.2);
+        font-weight: 700;
+        font-family: "IRANSansX", sans-serif;
+    }
+}
+
+/* چک باکس "مرا به خاطر بسپار" */
+.remember-me {
+    display: flex;
+    align-items: center;
+    margin-top: 15px;
+    font-size: 13px;
+    color: #555;
+}
+
+.remember-me input[type="checkbox"] {
+    margin-left: 8px;
+    width: 16px;
+    height: 16px;
+}
+
+/* لینک‌ها */
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+a:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+/* نوار وضعیت اپلیکیشن */
+.app-status-bar {
+    display: none;
+}
+
+@media (max-width: 480px) {
+    .app-status-bar {
+        display: none; /* مخفی کردن موقت برای بررسی */
+    }
+    
+    .app-status-bar::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 48px;
+        height: 4px;
+        background-color: rgba(255, 255, 255, 0.5);
+        border-radius: 4px;
+    }
+    
+    /* اضافه کردن افکت لمس روی دکمه */
+    .login-button:active {
+        transform: scale(0.98);
+    }
+    
+    /* بهبود آیکون در موبایل */
+    .input-with-icon i {
+        font-size: 18px;
+        right: 15px;
+    }
+}
+
+/* استایل دکمه در حالت loading */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.login-button.button-loading {
+    position: relative;
+    color: transparent;
+    background-color: #f1f1f1;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.login-button.button-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 3px solid #007E46;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+}
+
+@media (max-width: 480px) {
+    .login-button.button-loading::after {
+        width: 28px;
+        height: 28px;
+        border-width: 4px;
+    }
+}
+
+/* استایل دکمه در حالت active */
+.login-button.button-active {
+    transform: scale(0.98);
+    background-color: #00602f;
+}
