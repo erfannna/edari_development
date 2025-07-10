@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -o errexit
 
-export DJANGO_SUPERUSER_USERNAME="test"
+export DJANGO_SUPERUSER_USERNAME="1111"
 export DJANGO_SUPERUSER_EMAIL="your_email@example.com"
-export DJANGO_SUPERUSER_PASSWORD="test"
+export DJANGO_SUPERUSER_PASSWORD="1111"
 
 pip install -r requirements.txt
 
