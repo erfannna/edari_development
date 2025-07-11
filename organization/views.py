@@ -1439,13 +1439,13 @@ def api_get_users(request):
     
     # دریافت همه کاربران فعال
     User = get_user_model()
-    active_users = User.objects.filter(is_active=True)
+    active_users = User.objects.filter(is_active=True).exclude(id=request.user.id)
     
     # فیلتر کردن کاربران با مجوز مشاهده پیام
     authorized_users = []
     for user in active_users:
         # کاربرانی که مجوز ارسال پیام دارند و خود کاربر جاری
-        if user.has_perm('organization.add_message') or user == request.user:
+        if user.has_perm('organization.add_message'):
             authorized_users.append({
                 'id': user.id,
                 'name': user.get_full_name() or user.username,
