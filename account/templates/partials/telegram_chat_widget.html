@@ -40,6 +40,9 @@
 <!-- اضافه کردن فایل جاوااسکریپت برای اصلاح مشکل overlay -->
 <script src="{% static 'js/telegram-modal-fix.js' %}"></script>
 
+<!-- اضافه کردن فایل جاوا اسکریپت برای دکمه زمان‌بندی -->
+<script src="{% static 'js/telegram-schedule-button.js' %}"></script>
+
 <!-- اضافه کردن فایل جاوااسکریپت برای ضبط صدا -->
 <script src="{% static 'js/telegram-voice-recorder.js' %}"></script>
 
@@ -459,7 +462,7 @@
     
     .telegram-input {
         flex: 1;
-        padding: 12px 40px 12px 50px;
+        padding: 20px 40px 12px 50px;
         border: 1px solid #3A4053;
         border-radius: 20px;
         outline: none;
@@ -506,25 +509,24 @@
     /* گزینه‌های داخل INPUT - فقط در صفحه چت فعال نمایش داده شوند */
     .telegram-input-options {
         position: absolute;
-        bottom: 12px;
-        left: 12px;
+      
+        left: 8px;
+        bottom: 4px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 10px;
+        gap: 6px;
         z-index: 2;
     }
     
     /* فقط در صفحه چت فعال نمایش داده شود */
     .telegram-container-active .telegram-input-options {
         display: flex;
+        font-size: 15px;
     }
     
     .telegram-option-btn {
-        width: 16px;
-        height: 16px;
-        min-width: 16px;
-        min-height: 16px;
+
         border-radius: 0;
         background-color: transparent;
         color: #9AA0B5;
@@ -692,7 +694,7 @@
     
     .telegram-input {
         flex: 1;
-        padding: 12px 40px 12px 50px;
+        padding: 20px 40px 12px 50px;
         border: 1px solid #3A4053;
         border-radius: 20px;
         outline: none;
@@ -789,17 +791,7 @@
         transform: scale(1.1);
     }
     
-    /* گزینه‌های داخل INPUT */
-    .telegram-input-options {
-        position: absolute;
-        bottom: 12px;
-        left: 12px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-        z-index: 2;
-    }
+
     
     .telegram-option-btn {
         width: 18px;
@@ -1715,14 +1707,7 @@
 
 
 
-    /* استایل‌های جدید برای آپلود فایل، ضبط صدا و زمانبندی */
-    .telegram-input-options {
-        display: none;
-        align-items: center;
-        gap: 8px;
-    }
-    
-
+ 
     
     .telegram-option-btn:hover {
         background-color: #3A4053;
@@ -1792,7 +1777,7 @@
         gap: 4px;
         color: #fff;
         font-size: 14px;
-        max-width: calc(100% - 40px);
+        max-width: calc(100% - 60px);
         overflow: hidden;
         padding-right: 40px;
     }
@@ -2172,17 +2157,18 @@
     @media screen and (max-width: 768px) {
         .telegram-input {
           min-height: 80px;
+
         }
       .telegram-send-btn {
        font-size: 23px;
        bottom: 13px;
       }
       .telegram-input-options{
-        bottom: 13px;
-        row-gap: 20px;
+        bottom: 5px;
+        row-gap: 8px;
       }
       .telegram-option-btn{ 
-        font-size: 23px;
+        font-size: 19px;
        
       }
       .telegram-emoji-btn{
@@ -3504,13 +3490,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function sendMessage() {
         // بررسی اگر پنل زمانبندی باز است و تاریخ انتخاب نشده
         const schedulePanel = document.getElementById('schedulePanel');
-        
-        // اگر پنل زمانبندی نمایش داده نشده، آن را نمایش بده و از ادامه تابع جلوگیری کن
-        if (!schedulePanel || schedulePanel.style.display === 'none') {
-           
-            showSchedulePanel(true); // نمایش پنل با تنظیم تاریخ پیش‌فرض
-            return; // از ادامه تابع جلوگیری کن
-        }
         
         // اگر پنل زمانبندی باز است اما تاریخ انتخاب نشده
         if (schedulePanel && schedulePanel.style.display !== 'none' && !window.scheduledTime) {
@@ -5463,13 +5442,6 @@ document.getElementById('recordVoiceBtn').addEventListener('click', function() {
     }
 });
 
-document.getElementById('scheduleBtn').addEventListener('click', function() {
-    //('دکمه زمانبندی کلیک شد');
-    showSchedulePanel();
-    // به‌روزرسانی وضعیت دکمه ارسال
-    updateSendButtonState();
-});
-
 // رویداد انتخاب فایل
 document.getElementById('fileInput').addEventListener('change', function(e) {
     if (e.target.files.length > 0) {
@@ -5478,58 +5450,11 @@ document.getElementById('fileInput').addEventListener('change', function(e) {
     }
 });
 
-// رویداد انتخاب زمان ارسال
-document.getElementById('scheduledTimeInput').addEventListener('change', function(e) {
-    //('تاریخ تغییر کرد:', this.value);
-    
-    // تبدیل تاریخ انتخاب شده به تاریخ میلادی
-    const selectedDate = new Date(this.value);
-    if (!isNaN(selectedDate.getTime())) {
-        scheduledTime = selectedDate.toISOString();
-        //('تاریخ ذخیره شده:', scheduledTime);
-        
-        // نمایش تاریخ انتخاب شده در پنل زمانبندی
-        const scheduleTimeDisplay = document.getElementById('scheduleTimeDisplay');
-        if (scheduleTimeDisplay) {
-            scheduleTimeDisplay.textContent = this.value;
-            scheduleTimeDisplay.classList.remove('not-selected');
-            scheduleTimeDisplay.classList.add('selected');
-        }
-        
-        // نمایش پنل زمانبندی
-        const schedulePanel = document.getElementById('schedulePanel');
-        schedulePanel.style.display = 'flex';
-        
-        // به‌روزرسانی وضعیت دکمه ارسال
-        updateSendButtonState();
-        } else {
-        alert('لطفاً یک تاریخ معتبر انتخاب کنید.');
-        scheduledTime = null;
-        // به‌روزرسانی وضعیت دکمه ارسال
-        updateSendButtonState();
-    }
-});
-
 // رویداد حذف فایل انتخاب شده
 document.getElementById('removeFileBtn').addEventListener('click', function() {
     window.selectedFile = null;
     document.getElementById('fileInput').value = '';
     document.getElementById('filePreview').style.display = 'none';
-});
-
-// رویداد حذف زمان ارسال
-document.getElementById('removeScheduleBtn').addEventListener('click', function() {
-    schedulePanel.style.display = 'none';
-    scheduledTimeInput.value = '';
-    scheduledTime = null;
-    const scheduleTimeDisplay = document.getElementById('scheduleTimeDisplay');
-    if (scheduleTimeDisplay) {
-        scheduleTimeDisplay.textContent = 'انتخاب نشده';
-        scheduleTimeDisplay.classList.add('not-selected');
-        scheduleTimeDisplay.classList.remove('selected');
-    }
-    // به‌روزرسانی وضعیت دکمه ارسال
-    updateSendButtonState();
 });
 
 // رویدادهای ضبط صدا
@@ -6354,7 +6279,7 @@ function updateSendButtonState() {
     }
 }
 
-    // بارگذاری لیست تمام کاربران
+    // بارگذاری لیست کاربران
     function loadAllUsers() {
         const usersList = document.getElementById('telegramUsersList');
         if (usersList) {
